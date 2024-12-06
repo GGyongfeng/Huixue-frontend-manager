@@ -1,0 +1,136 @@
+@use '../../../assets/styles/variables' as vars;
+
+// 菜单基础样式
+.menu-left {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 101;
+  height: 100vh;
+  user-select: none;
+
+  :deep(.badge) {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    bottom: 0;
+    width: 6px;
+    height: 6px;
+    margin: auto;
+    background: #ff3860;
+    border-radius: 50%;
+    animation: breathe 1.5s ease-in-out infinite;
+  }
+
+  :deep(.text-badge) {
+    position: absolute;
+    top: 0;
+    right: 12px;
+    bottom: 0;
+    width: 30px;
+    height: 20px;
+    margin: auto;
+    line-height: 20px;
+    text-align: center;
+    background: #fd4e4e;
+    border-radius: 5px;
+
+    small {
+      color: #fff !important;
+    }
+  }
+
+  .header {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    overflow: hidden;
+    line-height: 60px;
+    cursor: pointer;
+
+    .svg-icon {
+      width: 32px;
+    }
+
+    p {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 55px;
+      margin-left: 10px;
+      font-size: 18px;
+      font-weight: 400 !important;
+    }
+  }
+
+  .el-menu {
+    box-sizing: border-box;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    border-right: 0;
+
+    &::-webkit-scrollbar {
+      width: 0 !important;
+    }
+  }
+
+  .menu-model {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: vars.$device-ipad) {
+  .menu-left {
+    .header {
+      display: none;
+    }
+
+    .el-menu {
+      height: 100vh;
+    }
+
+    .el-menu--collapse {
+      width: 0;
+    }
+  }
+}
+
+@media only screen and (max-width: vars.$device-phone) {
+  .menu-left-close {
+    width: 0;
+  }
+
+  .menu-left {
+    .menu-model {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      display: block;
+      width: 100%;
+      height: 100vh;
+      background: rgba($color: #000, $alpha: 50%);
+      transition: opacity 0.2s ease-in-out;
+    }
+  }
+}
+
+@keyframes breathe {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+}
