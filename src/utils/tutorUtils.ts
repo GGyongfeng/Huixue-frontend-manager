@@ -1,4 +1,4 @@
-import type { TutorType } from '@/types/tutorOrder'
+import type { TutorOrder } from '@/types/tutorOrder'
 
 // 格式化订单数据的工具函数
 export const tutorUtils = {

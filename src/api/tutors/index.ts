@@ -1,6 +1,6 @@
 import { queryApis } from './query'
 import { mutationApis } from './mutation'
-import type { TutorType, tutorQueryParams } from '@/types/tutorOrder'
+import type { TutorOrder, tutorQueryParams } from '@/types/tutorOrder'
 
 /**
  * 家教订单模块的统一入口文件
@@ -8,7 +8,7 @@ import type { TutorType, tutorQueryParams } from '@/types/tutorOrder'
  */
 
 // 导出类型定义，供其他模块使用
-export type { TutorType, tutorQueryParams }
+export type { TutorOrder, tutorQueryParams }
 
 /**
  * 家教订单服务类

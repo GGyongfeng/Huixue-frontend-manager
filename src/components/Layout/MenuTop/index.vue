@@ -11,7 +11,7 @@
       background-color="transparent"
     >
       <MenuTopSubmenu
-        v-for="item in list"
+        v-for="item in visibleMenuList"
         :key="item.id"
         :item="item"
         :isMobile="false"
@@ -26,7 +26,7 @@
 
   const route = useRoute()
 
-  defineProps({
+  const props = defineProps({
     list: {
       type: [Array] as PropType<MenuListType[]>,
       default: () => []
@@ -35,6 +35,27 @@
       type: Number,
       default: 500
     }
+  })
+
+  // 过滤掉带有 noMenu: true 的菜单项
+  const visibleMenuList = computed(() => {
+    const filterNoMenuItems = (items: MenuListType[]): MenuListType[] => {
+      return items.filter(item => {
+        // 如果当前项有 noMenu: true，则过滤掉
+        if (item.noMenu) {
+          return false
+        }
+        
+        // 如果有子菜单，递归过滤
+        if (item.children && item.children.length > 0) {
+          item.children = filterNoMenuItems(item.children)
+        }
+        
+        return true
+      })
+    }
+    
+    return filterNoMenuItems(props.list)
   })
 
   const routerPath = computed(() => {

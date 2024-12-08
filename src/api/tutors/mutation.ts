@@ -1,6 +1,6 @@
 import request from '@/middleware'
 import { BaseResult } from '@/types/axios'
-import { TutorType } from '@/types/tutorOrder'
+import { TutorOrder } from '@/types/tutorOrder'
 
 /**
  * 家教订单修改模块
@@ -12,9 +12,9 @@ export const mutationApis = {
    * @param data 订单数据，不包含id
    * @returns 返回添加结果
    */
-  addTutor: (data: TutorType) => {
+  addTutor: (data: TutorOrder) => {
     return request.post<BaseResult>({
-      url: '/api/manager/tutors/add',
+      url: '/api/manager/tutors/create',
       data
     })
   },
@@ -24,7 +24,7 @@ export const mutationApis = {
    * @param data 订单数据，必须包含id
    * @returns 返回更新结果
    */
-  updateTutor: (data: TutorType) => {
+  updateTutor: (data: TutorOrder) => {
     const { id, ...restData } = data
     
     return request.put<BaseResult>({

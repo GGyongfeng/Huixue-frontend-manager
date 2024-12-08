@@ -241,7 +241,7 @@
   }
 
   const toGithub = () => {
-    window.open('https://github.com/Daymychen/art-design-pro')
+    window.open('https://github.com/GGyongfeng/HuiXueJiaoPei')
   }
 
   const toHome = () => {

@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { TutorType } from '@/types/tutorOrder'
+import type { TutorOrder } from '@/types/tutorOrder'
 import { DEFAULT_TABLE_CONFIG, ALL_COLUMNS, type TableConfig } from '@/types/tutorMenuList'
 import { Delete, Edit, View, Hide, Select, CircleCheck, ArrowDown } from '@element-plus/icons-vue'
 import FilterTags from '../FilterTags/FilterTags.vue'
@@ -83,17 +83,17 @@ import { useTutorStore } from '@/store/modules/tutor'
 // Props 定义
 const props = defineProps<{
   loading: boolean
-  data: TutorType[]
+  data: TutorOrder[]
   total: number
   config?: TableConfig
 }>()
 
 const emit = defineEmits<{
   (e: 'page-change', page: number): void
-  (e: 'edit', row: TutorType): void
-  (e: 'delete', row: TutorType): void
-  (e: 'visibility-change', row: TutorType): void
-  (e: 'status-change', row: TutorType): void
+  (e: 'edit', row: TutorOrder): void
+  (e: 'delete', row: TutorOrder): void
+  (e: 'visibility-change', row: TutorOrder): void
+  (e: 'status-change', row: TutorOrder): void
 }>()
 
 const currentPage = ref(1)
@@ -114,19 +114,19 @@ const handlePageChange = (page: number) => {
   emit('page-change', page)
 }
 
-const handleEdit = (row: TutorType) => {
+const handleEdit = (row: TutorOrder) => {
   emit('edit', row)
 }
 
-const handleDelete = (row: TutorType) => {
+const handleDelete = (row: TutorOrder) => {
   emit('delete', row)
 }
 
-const handleVisibility = (row: TutorType) => {
+const handleVisibility = (row: TutorOrder) => {
   emit('visibility-change', row)
 }
 
-const handleStatus = (row: TutorType) => {
+const handleStatus = (row: TutorOrder) => {
   emit('status-change', row)
 }
 
@@ -143,7 +143,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '../../../../assets/styles/variables' as vars;
+@use '@/assets/styles/variables' as vars;
 
 .tutor-table {
   padding: 0px;  // 默认间距

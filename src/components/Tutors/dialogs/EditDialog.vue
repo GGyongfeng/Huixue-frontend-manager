@@ -1,18 +1,16 @@
 <template>
   <el-dialog
-    title="新增订单"
+    title="编辑订单"
     :modelValue="visible"
     @update:modelValue="emit('update:visible', $event)"
     width="600px"
     :close-on-click-modal="false"
     @close="handleClose"
   >
-    <!-- 表单内容 -->
     <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
       <!-- 表单项将在后续添加 -->
     </el-form>
 
-    <!-- 底部按钮 -->
     <template #footer>
       <el-button @click="handleClose">取消</el-button>
       <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
@@ -22,12 +20,13 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import type { TutorType } from '@/types/tutorOrder'
+import type { TutorOrder } from '@/types/tutorOrder'
 import { TutorsService } from '@/api/tutors'
 import type { FormRules } from 'element-plus'
 
 const props = defineProps<{
   visible: boolean
+  data?: TutorOrder
 }>()
 
 const emit = defineEmits<{
@@ -37,7 +36,7 @@ const emit = defineEmits<{
 
 const loading = ref(false)
 const formRef = ref()
-const formData = reactive<Partial<TutorType>>({})
+const formData = reactive<Partial<TutorOrder>>({})
 
 // 添加表单验证规则
 const rules = reactive<FormRules>({

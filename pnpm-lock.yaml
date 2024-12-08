@@ -87,6 +87,9 @@ importers:
       '@eslint/js':
         specifier: ^9.9.1
         version: 9.16.0
+      '@types/mockjs':
+        specifier: ^1.0.10
+        version: 1.0.10
       '@types/node':
         specifier: ^22.1.0
         version: 22.10.1
@@ -974,6 +977,9 @@ packages:
 
   '@types/minimatch@5.1.2':
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
+
+  '@types/mockjs@1.0.10':
+    resolution: {integrity: sha512-SXgrhajHG7boLv6oU93CcmdDm0HYRiceuz6b+7z+/2lCJPTWDv0V5YiwFHT2ejE4bQqgSXQiVPQYPWv7LGsK1g==}
 
   '@types/node@22.10.1':
     resolution: {integrity: sha512-qKgsUwfHZV2WCWLAnVP1JqnpE6Im6h3Y0+fYgMTasNQ7V++CBX5OT1as0g0f+OyubbFqhf6XVNIsmN4IIhEgGQ==}
@@ -5144,6 +5150,8 @@ snapshots:
   '@types/mdurl@2.0.0': {}
 
   '@types/minimatch@5.1.2': {}
+
+  '@types/mockjs@1.0.10': {}
 
   '@types/node@22.10.1':
     dependencies:

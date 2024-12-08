@@ -1,4 +1,4 @@
-import type { TutorType } from '@/types/tutorOrder'
+import type { TutorOrder } from '@/types/tutorOrder'
 
 /**
  * 校验错误信息接口
@@ -9,7 +9,7 @@ interface ValidationResult {
 }
 
 /**
- * 校验家教订单数据是否符合 TutorType 的要求
+ * 校验家教订单数据是否符合 TutorOrder 的要求
  * @param data 要校验的数据对象
  * @returns ValidationResult 校验结果
  */

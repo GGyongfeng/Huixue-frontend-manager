@@ -24,7 +24,7 @@
       :active-text-color="theme.textActiveColor"
       :default-openeds="defaultOpenedsArray"
     >
-      <submenu :list="menuList" :isMobile="isMobileModel" :theme="theme" @close="closeMenu" />
+      <submenu :list="visibleMenuList" :isMobile="isMobileModel" :theme="theme" @close="closeMenu" />
     </el-menu>
 
     <div
@@ -46,6 +46,7 @@
   import { SystemInfo } from '@/config/setting'
   import { MenuWidth } from '@/enums/appEnum'
   import { useMenuStore } from '@/store/modules/menu'
+  import { MenuListType } from '@/types/menu'
 
   const route = useRoute()
   const router = useRouter()
@@ -57,6 +58,24 @@
   const uniqueOpened = computed(() => settingStore.uniqueOpened)
   const defaultOpenedsArray = ref([])
   const menuList = computed(() => useMenuStore().getMenuList)
+
+  const visibleMenuList = computed(() => {
+    const filterNoMenuItems = (items: MenuListType[]): MenuListType[] => {
+      return items.filter(item => {
+        if (item.noMenu) {
+          return false
+        }
+        
+        if (item.children && item.children.length > 0) {
+          item.children = filterNoMenuItems(item.children)
+        }
+        
+        return true
+      })
+    }
+    
+    return filterNoMenuItems(menuList.value)
+  })
 
   const routerPath = computed(() => {
     if (route.path === '/user/user') {

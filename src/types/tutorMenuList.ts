@@ -1,4 +1,5 @@
-import type { TutorType } from './tutorOrder'
+import type { TutorOrder } from './tutorOrder'
+import { ORDER_ITEM_OPTIONS } from '@/config/OrderCreatingConfig'
 
 // 选择类型
 type SelectType = 'multiple' | 'none'
@@ -12,7 +13,7 @@ export interface TableColumn {
   label: string
   width?: number
   fixed?: boolean | 'left' | 'right'
-  formatter?: (row: TutorType) => string
+  formatter?: (row: TutorOrder) => string
   slot?: string   // 可选的插槽名称
   visible?: boolean  // 控制列的显示/隐藏
   comment?: string   // 注释说明
@@ -32,6 +33,17 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '订单的唯一编号'
   },
   { 
+    prop: 'order_tags', 
+    label: '订单标签', 
+    width: FOUR_CHAR_LABEL_WIDTH,
+    visible: true,
+    comment: '订单标签',
+    select: {
+      type: 'multiple',
+      options: [...ORDER_ITEM_OPTIONS.order_tags]
+    }
+  },
+  { 
     prop: 'student_gender', 
     label: '学生性别', 
     width: FOUR_CHAR_LABEL_WIDTH,
@@ -39,7 +51,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '学生的性别',
     select: {
       type: 'multiple',
-      options: ['男', '女']
+      options: [...ORDER_ITEM_OPTIONS.gender_options]
     }
   },
   { 
@@ -50,7 +62,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '一对一或一对多',
     select: {
       type: 'multiple',
-      options: ['一对一', '一对多']
+      options: [...ORDER_ITEM_OPTIONS.teaching_types]
     }
   },
   { 
@@ -61,19 +73,19 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '学生所在年级',
     select: {
       type: 'multiple',
-      options: ['幼儿', '小学', '初一', '初二', '初三', '高一', '高二', '高三', '其他']
+      options: [...ORDER_ITEM_OPTIONS.student_grades]
     }
   },
   { 
     prop: 'subjects', 
     label: '补习科目', 
     width: FOUR_CHAR_LABEL_WIDTH,
-    formatter: (row: TutorType) => Array.isArray(row.subjects) ? row.subjects.join('、') : row.subjects,
+    formatter: (row: TutorOrder) => Array.isArray(row.subjects) ? row.subjects.join('、') : row.subjects,
     visible: true,
     comment: '需要补习的科目',
     select: {
       type: 'multiple',
-      options: ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治']
+      options: [...ORDER_ITEM_OPTIONS.subjects]
     }
   },
   { 
@@ -84,13 +96,13 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '期望的教师类型',
     select: {
       type: 'multiple',
-      options: ['在职老师', '985学生', '无']
+      options: [...ORDER_ITEM_OPTIONS.teacher_types]
     }
   },
   { 
     prop: 'teacher_gender', 
     label: '教师性别', 
-    width:  FOUR_CHAR_LABEL_WIDTH,
+    width: FOUR_CHAR_LABEL_WIDTH,
     visible: true,
     comment: '期望的教师性别',
     select: {
@@ -106,7 +118,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '所在区域',
     select: {
       type: 'multiple',
-      options: ['南开区', '和平区', '河西区', '河东区', '河北区', '红桥区', '津南区', '滨海新区']
+      options: [...ORDER_ITEM_OPTIONS.districts['天津']] // 默认显示天津的区域
     }
   },
   { 
@@ -124,6 +136,20 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '详细地址'
   },
   { 
+    prop: 'phone_number', 
+    label: '联系电话', 
+    width: 200,
+    visible: true,
+    comment: '联系电话'
+  },
+  { 
+    prop: 'order_source', 
+    label: '订单来源', 
+    width: 200,
+    visible: true,
+    comment: '订单来源'
+  },
+  { 
     prop: 'grade_score', 
     label: '成绩情况', 
     width: FOUR_CHAR_LABEL_WIDTH,
@@ -138,7 +164,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '学生整体水平',
     select: {
       type: 'multiple',
-      options: ['优秀', '较好', '中等', '不及格']
+      options: [...ORDER_ITEM_OPTIONS.student_levels]
     }
   },
   { 
@@ -182,7 +208,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     prop: 'created_at', 
     label: '创建时间', 
     width: 180,
-    formatter: (row: TutorType) => {
+    formatter: (row: TutorOrder) => {
       if (!row.created_at) return ''
       return new Date(row.created_at).toLocaleString('zh-CN', {
         year: 'numeric',
@@ -208,7 +234,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     prop: 'updated_at', 
     label: '更新时间', 
     width: 180,
-    formatter: (row: TutorType) => {
+    formatter: (row: TutorOrder) => {
       if (!row.updated_at) return ''
       return new Date(row.updated_at).toLocaleString('zh-CN', {
         year: 'numeric',

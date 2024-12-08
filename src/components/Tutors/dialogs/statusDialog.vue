@@ -33,12 +33,12 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import type { TutorType } from '@/types/tutorOrder'
+import type { TutorOrder } from '@/types/tutorOrder'
 import { TutorsService } from '@/api/tutors'
 
 const props = defineProps<{
   visible: boolean
-  data?: TutorType
+  data?: TutorOrder
 }>()
 
 const emit = defineEmits<{
@@ -48,7 +48,7 @@ const emit = defineEmits<{
 
 const loading = ref(false)
 const formRef = ref()
-const formData = reactive<Partial<TutorType>>({
+const formData = reactive<Partial<TutorOrder>>({
   status: '未成交',
   deal_teacher_id: undefined,
   deal_staff_id: undefined

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { TutorType } from '@/types/tutorOrder'
+import type { TutorOrder } from '@/types/tutorOrder'
 import type { TableColumn } from '@/types/tutorMenuList'
 import type { tutorQueryParams } from '@/types/tutorOrder'
 import type { FilterSelection, FilterState } from '@/types/Filter'
@@ -29,8 +29,8 @@ const saveFilters = (filters: FilterState) => {
 
 export const useTutorStore = defineStore('tutor', {
   state: () => ({
-    currentTutor: null as TutorType | null,  // 当前选中的家教订单
-    tutorList: [] as TutorType[],            // 家教订单列表
+    currentTutor: null as TutorOrder | null,  // 当前选中的家教订单
+    tutorList: [] as TutorOrder[],            // 家教订单列表
     total: 0,                                // 订单总数
     loading: false,                          // 加载状态
     filterSelections: getStoredFilters() as FilterState,      // 所有列的筛选条件状态
@@ -44,12 +44,12 @@ export const useTutorStore = defineStore('tutor', {
   
   actions: {
     // 设置当前选中的订单
-    setCurrentTutor(tutor: TutorType | null) {
+    setCurrentTutor(tutor: TutorOrder | null) {
       this.currentTutor = tutor
     },
     
     // 设置订单列表
-    setTutorList(list: TutorType[]) {
+    setTutorList(list: TutorOrder[]) {
       this.tutorList = list
     },
     

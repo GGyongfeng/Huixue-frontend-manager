@@ -2,6 +2,7 @@ import { fourDotsSpinnerSvg } from '@/assets/svg/loading'
 import { ElLoading } from 'element-plus'
 import request from '@/middleware'
 import { MenuResponse, MenuResult } from './model/menuModel'
+import { MenuListType } from '@/types/menu'
 
 /**
  * 菜单服务
@@ -34,8 +35,20 @@ export const menuService = {
         request.get<MenuResponse>(requestConfig)
           .then(res => {
             if (res.code === 200) {
+              // 处理图标数据
+              // 处理\u的转义问题
+              const processIcons = (menuItems: MenuListType[]): MenuListType[] => {
+                return menuItems.map((item: MenuListType): MenuListType => ({
+                  ...item,
+                  icon: item.icon ? String.fromCharCode(parseInt(item.icon, 16)) : item.icon,
+                  children: item.children ? processIcons(item.children) : []
+                }))
+              }
+              
+              const processedData = processIcons(res.data)
+              
               resolve({
-                menuList: res.data,
+                menuList: processedData,
                 closeLoading: () => loading.close()
               })
             } else {

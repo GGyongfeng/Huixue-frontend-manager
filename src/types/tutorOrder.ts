@@ -1,27 +1,40 @@
 import { BaseResult } from '@/types/axios'
 import type { QueryFilters } from './Filter'
+import type { 
+  TeachingType,
+  StudentGrade,
+  Subject,
+  TeacherType,
+  StudentLevel,
+  Gender,
+  OrderTag,
+  City,
+  District
+} from '@/config/OrderCreatingConfig'
 
 /**
  * 家教订单数据类型
  */
-export interface TutorType {
+export interface TutorOrder {
   id?: number                 // 订单ID
   tutor_code: string         // 订单编号
-  student_gender: '男' | '女'  // 学生性别
-  teaching_type: '一对一' | '一对多'  // 教学类型
-  student_grade: '幼儿' | '小学' | '初一' | '初二' | '初三' | '高一' | '高二' | '高三' | '其他'  // 学生年级
-  subjects: string[]         // 补习科目（可多选）
-  teacher_type?: '在职老师' | '985学生' | '无'  // 教师类型要求
-  teacher_gender?: '男' | '女' | '无'  // 教师性别要求
-  order_tags?: string[]      // 订单标签（可多选）
-  district: '南开区' | '和平区' | '河西区' | '河东区' | '河北区' | '红桥区' | '津南区' | '滨海新区'  // 区域
-  city: string              // 城市
+  student_gender: Gender     // 学生性别
+  teaching_type: TeachingType  // 教学类型
+  student_grade: StudentGrade  // 学生年级
+  subjects: Subject[]         // 补习科目（可多选）
+  teacher_type: TeacherType  // 教师类型要求
+  teacher_gender: '男' | '女' | '无'  // 教师性别要求
+  order_tags: OrderTag[]      // 订单标签（可多选）
+  city: City                 // 城市
+  district: District<City>    // 区域，根据城市动态变化
   address: string           // 详细地址
   grade_score?: string      // 成绩情况
-  student_level?: '优秀' | '较好' | '中等' | '不及格'  // 学生水平
+  student_level?: StudentLevel  // 学生水平
   tutoring_time: string     // 辅导时间
   salary: string           // 课时费
   requirement_desc?: string // 具体要求
+  phone_number?: string     // 联系电话
+  order_source?: string    // 订单来源
   is_visible?: boolean     // 是否可见
   status?: '已成交' | '未成交'  // 订单状态
   created_at?: string      // 创建时间
@@ -58,34 +71,7 @@ export interface tutorQueryParams {
  */
 export interface TutorResponse extends BaseResult {
   data: {
-    list: TutorType[]
+    list: TutorOrder[]
     total: number
   }
-}
-
-/**
- * 新增订单参数类型
- */
-export interface CreateTutorParams extends Omit<TutorType, 
-  'id' | 'created_at' | 'updated_at' | 'deleted_at' | 
-  'created_by' | 'updated_by' | 'deleted_by' | 
-  'deal_time' | 'deal_teacher_id' | 'deal_staff_id'> {
-  // 去掉了一些自动生成的字段
-}
-
-/**
- * 更新订单参数类型
- */
-export interface UpdateTutorParams extends Partial<CreateTutorParams> {
-  id: number  // 更新时必须提供ID
-}
-
-/**
- * 订单状态更新参数
- */
-export interface UpdateStatusParams {
-  id: number
-  status: '已成交' | '未成交'
-  deal_teacher_id?: number
-  deal_staff_id?: number
 }

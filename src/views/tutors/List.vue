@@ -23,11 +23,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useTutorStore } from '@/store/modules/tutor'
-import TutorSearch from './components/tutorSearch/tutorSearch.vue'
-import TutorTable from './components/tutorTable/tutorTable.vue'
-import type { tutorQueryParams, TutorType, TutorResponse } from '@/types/tutorOrder'
+import TutorSearch from '@/components/Tutors/tutorSearch/tutorSearch.vue'
+import TutorTable from '@/components/Tutors/tutorTable/tutorTable.vue'
+import type { tutorQueryParams, TutorOrder, TutorResponse } from '@/types/tutorOrder'
 import { TutorsService } from '@/api/tutors'
-import { CreateDialog, EditDialog, DeleteDialog } from '@/views/tutors/components/dialogs'
+import { CreateDialog, EditDialog, DeleteDialog } from '@/components/Tutors/dialogs'
 import { DEFAULT_TABLE_CONFIG, ALL_COLUMNS } from '@/types/tutorMenuList'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { mutationApis } from '@/api/tutors/mutation'
@@ -37,7 +37,7 @@ const tutorStore = useTutorStore()
 
 // 响应式数据
 const loading = ref(false)
-const tutorList = ref<TutorType[]>([])
+const tutorList = ref<TutorOrder[]>([])
 const total = ref(0)
 const queryParams = ref<tutorQueryParams>({
     page: 1,
@@ -48,7 +48,7 @@ const queryParams = ref<tutorQueryParams>({
 const createVisible = ref(false)
 const editVisible = ref(false)
 const deleteVisible = ref(false)
-const currentTutor = ref<TutorType | undefined>(undefined)
+const currentTutor = ref<TutorOrder | undefined>(undefined)
 const currentId = ref<number>()
 
 const tableConfig = ref({ ...DEFAULT_TABLE_CONFIG })
@@ -114,13 +114,13 @@ const handleSuccess = async () => {
 }
 
 // 打开编辑弹窗
-const handleEdit = (row: TutorType) => {
+const handleEdit = (row: TutorOrder) => {
     currentTutor.value = row
     editVisible.value = true
 }
 
 // 打开删除弹窗
-const handleDelete = (row: TutorType) => {
+const handleDelete = (row: TutorOrder) => {
     currentId.value = row.id
     deleteVisible.value = true
 }
@@ -158,7 +158,7 @@ const initTableConfig = () => {
     }
 }
 
-const handleVisibilityChange = async (row: TutorType) => {
+const handleVisibilityChange = async (row: TutorOrder) => {
     try {
         await TutorsService.updateTutor({
             ...row,
@@ -170,7 +170,7 @@ const handleVisibilityChange = async (row: TutorType) => {
     }
 }
 
-const handleStatusChange = async (row: TutorType) => {
+const handleStatusChange = async (row: TutorOrder) => {
     try {
         const newStatus = (row.status === '已成交' ? '未成交' : '已成交') as '已成交' | '未成交'
         

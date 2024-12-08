@@ -1,6 +1,6 @@
 import request from '@/middleware'
 import { ElLoading } from 'element-plus'
-import { tutorQueryParams, TutorResponse, TutorType } from '@/types/tutorOrder'
+import { tutorQueryParams, TutorResponse, TutorOrder } from '@/types/tutorOrder'
 import { BaseResult } from '@/types/axios'
 
 /**
@@ -71,7 +71,7 @@ export const queryApis = {
    * @returns 返回单个订单的详细信息
    */
   getTutorDetail: (id: number) => {
-    return request.get<BaseResult & { data: TutorType }>({
+    return request.get<BaseResult & { data: TutorOrder }>({
       url: `/api/manager/tutors/detail/${id}`
     })
   }
