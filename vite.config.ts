@@ -53,17 +53,32 @@ export default ({ mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: true, // 生产环境去除 console
-          drop_debugger: true // 生产环境去除 debugger
+          drop_console: true,
+          drop_debugger: true
         }
       },
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ['vue', 'vue-router', 'pinia', 'element-plus']
+            'vue-vendor': ['vue', 'vue-router', 'pinia'],
+            'element-plus': ['element-plus'],
+            'editor': ['@wangeditor/editor', '@wangeditor/editor-for-vue'],
+            'echarts': ['echarts'],
+            'other-vendor': ['axios', '@vueuse/core', 'vue-i18n']
           }
+        },
+        onwarn(warning, warn) {
+          if (warning.message.includes('mockjs')) return
+          warn(warning)
         }
-      }
+      },
+      // 禁用 sourcemap 减小体积
+      sourcemap: false,
+      // CSS 相关优化
+      cssCodeSplit: true,
+      cssMinify: true,
+      // 设置较大的内存限制
+      assetsInlineLimit: 4096
     },
     plugins: [
       vue(),

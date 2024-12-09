@@ -10,7 +10,7 @@ import type {
   OrderTag,
   City,
   District
-} from '@/config/OrderCreatingConfig'
+} from '@/types/OrderOptions'
 
 /**
  * 家教订单数据类型
@@ -21,10 +21,10 @@ export interface TutorOrder {
   student_gender: Gender     // 学生性别
   teaching_type: TeachingType  // 教学类型
   student_grade: StudentGrade  // 学生年级
-  subjects: Subject[]         // 补习科目（可多选）
+  subjects: string[]         // 补习科目（可多选）
   teacher_type: TeacherType  // 教师类型要求
   teacher_gender: '男' | '女' | '无'  // 教师性别要求
-  order_tags: OrderTag[]      // 订单标签（可多选）
+  order_tags: string[]      // 订单标签（可多选）
   city: City                 // 城市
   district: District<City>    // 区域，根据城市动态变化
   address: string           // 详细地址

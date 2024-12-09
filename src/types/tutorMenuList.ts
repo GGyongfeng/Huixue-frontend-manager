@@ -1,5 +1,5 @@
 import type { TutorOrder } from './tutorOrder'
-import { ORDER_ITEM_OPTIONS } from '@/config/OrderCreatingConfig'
+import { ORDER_ITEM_OPTIONS } from '@/types/OrderOptions'
 
 // 选择类型
 type SelectType = 'multiple' | 'none'

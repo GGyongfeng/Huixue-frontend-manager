@@ -1,0 +1,101 @@
+@use '@/assets/styles/variables.scss' as *;
+
+.edit-card {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+.edit-card-container {
+  :deep(.el-form) {
+    max-width: 1100px;
+    margin: 0 auto;
+
+    // 基础样式
+    .el-form-item__label {
+      height: 32px;
+      line-height: 32px;
+    }
+
+    // 一级标题加粗
+    >.el-form-item>.el-form-item__label {
+      font-weight: 600;
+    }
+
+    // 子标题不加粗
+    .el-row .el-form-item__label {
+      font-weight: normal;
+    }
+
+    // PC端样式
+    @media screen and (min-width: $device-phone) {
+      .el-form-item__label {
+        width: 120px !important;
+        padding-right: 8px;
+      }
+
+      .el-row {
+        .el-form-item {
+          .el-select {
+            width: 180px;
+          }
+        }
+      }
+    }
+
+    // 移动端样式
+    @media screen and (max-width: $device-phone) {
+      .el-form-item__label {
+        width: 100px !important;
+        padding-right: 4px;
+      }
+
+      .el-row {
+        .el-col {
+          margin-bottom: 15px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+    // 自定义label样式
+    .primary-label {
+      display: inline-block;
+      width: 70px;
+      font-weight: 600;
+      text-align: justify;
+      text-align-last: justify;
+      height: 32px;
+      line-height: 32px;
+      vertical-align: middle;
+    }
+
+    .label-colon {
+      display: inline-block;
+      width: 8px;
+      text-align: center;
+    }
+
+    .label-required {
+      display: inline-block;
+      width: 10px;
+      color: #f56c6c;
+      margin-right: 4px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    // 移除默认星号
+    :deep(.el-form-item.is-required) {
+      .el-form-item__label {
+        &:before,
+        &:after {
+          content: '' !important;
+          display: none !important;
+        }
+      }
+    }
+  }
+}

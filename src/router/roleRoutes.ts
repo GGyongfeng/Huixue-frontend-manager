@@ -75,7 +75,7 @@ export const roleRoutes: AppRouteRecordRaw[] = [
             }
           },
           {
-            path: '/tutors/edit/:id',
+            path: '/tutors/edit',
             component: () => import('@views/tutors/Edit.vue'),
             meta: {
               title: '编辑订单',

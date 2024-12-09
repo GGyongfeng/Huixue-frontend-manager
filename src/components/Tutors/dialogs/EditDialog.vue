@@ -1,28 +1,28 @@
 <template>
   <el-dialog
-    title="编辑订单"
+    title="确认编辑"
     :modelValue="visible"
     @update:modelValue="emit('update:visible', $event)"
-    width="600px"
+    width="400px"
     :close-on-click-modal="false"
     @close="handleClose"
   >
-    <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
-      <!-- 表单项将在后续添加 -->
-    </el-form>
+    <div class="confirm-content">
+      <p>确定要编辑订单 <span class="order-code">{{ data?.tutor_code }}</span> 吗？</p>
+    </div>
 
     <template #footer>
       <el-button @click="handleClose">取消</el-button>
-      <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
+      <el-button type="primary" :loading="loading" @click="handleConfirm">确定</el-button>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import type { TutorOrder } from '@/types/tutorOrder'
-import { TutorsService } from '@/api/tutors'
-import type { FormRules } from 'element-plus'
+import { useTutorStore } from '@/store/modules/tutor'
 
 const props = defineProps<{
   visible: boolean
@@ -34,49 +34,33 @@ const emit = defineEmits<{
   (e: 'success'): void
 }>()
 
+const router = useRouter()
+const tutorStore = useTutorStore()
 const loading = ref(false)
-const formRef = ref()
-const formData = reactive<Partial<TutorOrder>>({})
-
-// 添加表单验证规则
-const rules = reactive<FormRules>({
-  tutor_code: [
-    { required: true, message: '请输入订单编号', trigger: 'blur' }
-  ],
-  student_gender: [
-    { required: true, message: '请选择学生性别', trigger: 'change' }
-  ],
-  teaching_type: [
-    { required: true, message: '请选择教学类型', trigger: 'change' }
-  ],
-  student_grade: [
-    { required: true, message: '请选择学生年级', trigger: 'change' }
-  ],
-  subjects: [
-    { required: true, message: '请选择补习科目', trigger: 'change' }
-  ],
-  district: [
-    { required: true, message: '请选择区域', trigger: 'change' }
-  ],
-  city: [
-    { required: true, message: '请输入城市', trigger: 'blur' }
-  ],
-  address: [
-    { required: true, message: '请输入详细地址', trigger: 'blur' }
-  ],
-  tutoring_time: [
-    { required: true, message: '请输入辅导时间', trigger: 'blur' }
-  ],
-  salary: [
-    { required: true, message: '请输入课时费', trigger: 'blur' }
-  ]
-})
 
 const handleClose = () => {
   emit('update:visible', false)
 }
 
-const handleSubmit = async () => {
-  // 提交逻辑将在后续添加
+const handleConfirm = () => {
+  if (props.data) {
+    // 将当前订单存储到 store
+    tutorStore.setCurrentTutor(props.data)
+    // 跳转到编辑页面
+    router.push('/tutors/edit')
+    handleClose()
+  }
 }
-</script> 
+</script>
+
+<style lang="scss" scoped>
+.confirm-content {
+  padding: 20px 0;
+  text-align: center;
+  
+  .order-code {
+    color: var(--el-color-primary);
+    font-weight: bold;
+  }
+}
+</style> 

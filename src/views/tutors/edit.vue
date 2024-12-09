@@ -1,117 +1,190 @@
 <template>
-  <div class="tutor-edit">
-    <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>编辑教师</span>
-        </div>
-      </template>
-      
-      <el-form :model="formData" :rules="rules" ref="formRef" label-width="100px" v-loading="loading">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入教师姓名"></el-input>
+  <div class="page-content">
+    <div class="header">
+      <h3>编辑订单</h3>
+    </div>
+
+    <!-- 订单号输入框，仅在直接访问时显示 -->
+    <div v-if="showIdInput" class="order-id-input">
+      <el-form :inline="true">
+        <el-form-item label="订单编号">
+          <el-input v-model="orderId" placeholder="请输入订单编号" />
         </el-form-item>
-        
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="formData.phone" placeholder="请输入手机号"></el-input>
-        </el-form-item>
-        
         <el-form-item>
-          <el-button type="primary" @click="submitForm">保存</el-button>
-          <el-button @click="goBack">返回</el-button>
+          <el-button type="primary" @click="fetchOrderDetail" :loading="loading">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
-    </el-card>
+    </div>
+
+    <!-- 订单编辑表单 -->
+    <OrderEditCard
+      v-if="orderForm"
+      v-model="orderForm"
+      ref="orderEditCardRef"
+    >
+      <template #form-actions>
+        <el-form-item class="form-actions">
+          <el-button @click="resetForm">重置</el-button>
+          <el-button
+            type="primary"
+            @click="submitForm"
+            :loading="loading"
+          >
+            保存
+          </el-button>
+        </el-form-item>
+      </template>
+    </OrderEditCard>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
+import OrderEditCard from '@/components/Form/OrderForm/OrderEditor/index.vue'
+import type { TutorOrder } from '@/types/tutorOrder'
+import { useTutorStore } from '@/store/modules/tutor'
+import { queryApis } from '@/api/tutors/query'
+import { mutationApis } from '@/api/tutors/mutation'
 
 const route = useRoute()
 const router = useRouter()
-const formRef = ref<FormInstance>()
+const tutorStore = useTutorStore()
 const loading = ref(false)
+const orderEditCardRef = ref()
 
-const formData = reactive({
-  name: '',
-  phone: ''
-})
+// 表单数据
+const orderForm = ref<TutorOrder | null>(null)
+const orderId = ref('')
 
-const rules = reactive<FormRules>({
-  name: [
-    { required: true, message: '请输入教师姓名', trigger: 'blur' },
-    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
-  ],
-  phone: [
-    { required: true, message: '请输入手机号', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ]
-})
+// 是否显示订单号输入框
+const showIdInput = ref(false)
 
-// 加载教师数据
-const loadTutorData = async () => {
-  const id = route.params.id
-  if (!id) return
-  
-  loading.value = true
+// 数据转换函数
+const transformOrderData = (data: TutorOrder) => {
+  return {
+    ...data,
+    subjects: Array.isArray(data.subjects) ? data.subjects : [data.subjects],
+    order_tags: Array.isArray(data.order_tags) ? data.order_tags : [data.order_tags]
+  }
+}
+
+// 获取订单详情
+const fetchOrderDetail = async () => {
+  if (!orderId.value) {
+    ElMessage.warning('请输入订单编号')
+    return
+  }
+
+  // 验证订单号不包含中文
+  const hasChinese = /[\u4e00-\u9fa5]/.test(orderId.value)
+  if (hasChinese) {
+    ElMessage.warning('订单编号不能包含中文')
+    return
+  }
+
   try {
-    // TODO: 调用API获取教师数据
-    // const res = await getTutorById(id)
-    // Object.assign(formData, res.data)
-    
-    // 模拟数据
-    setTimeout(() => {
-      Object.assign(formData, {
-        name: '测试教师',
-        phone: '13800138000'
-      })
-      loading.value = false
-    }, 500)
+    loading.value = true
+    const res = await queryApis.getTutorDetail(orderId.value)
+    if (res.code === 200 && res.data) {
+      orderForm.value = transformOrderData(res.data)
+    } else {
+      ElMessage.error(res.message || '获取订单详情失败')
+    }
   } catch (error) {
-    ElMessage.error('加载数据失败')
+    console.error('获取订单详情失败:', error)
+    ElMessage.error('获取订单详情失败')
+  } finally {
     loading.value = false
   }
 }
 
+// 提交表单
 const submitForm = async () => {
-  if (!formRef.value) return
-  await formRef.value.validate((valid, fields) => {
-    if (valid) {
-      console.log('提交表单:', formData)
-      // TODO: 调用API更新数据
-      ElMessage.success('保存成功')
-      goBack()
-    } else {
-      console.error('表单验证失败:', fields)
-    }
-  })
+  if (!orderForm.value) {
+    ElMessage.warning('表单数据不能为空')
+    return
+  }
+
+  try {
+    const valid = await orderEditCardRef.value?.validate()
+    if (!valid) return
+
+    loading.value = true
+    
+    // 打印表单数据到控制台
+    console.log('提交的表单数据:', orderForm.value)
+    
+    // 模拟成功响应
+    ElMessage.success('更新成功（测试）')
+    router.push('/tutors/list')
+    
+  } catch (error) {
+    console.error('更新订单失败:', error)
+    ElMessage.error('更新失败，请稍后重试')
+  } finally {
+    loading.value = false
+  }
 }
 
-const goBack = () => {
-  router.back()
+// 重置表单
+const resetForm = () => {
+  if (tutorStore.currentTutor) {
+    orderForm.value = transformOrderData(tutorStore.currentTutor)
+  } else {
+    fetchOrderDetail()
+  }
+  orderEditCardRef.value?.resetFields()
 }
 
+// 初始化
 onMounted(() => {
-  loadTutorData()
+  // 如果store中有当前选中的订单，直接使用
+  if (tutorStore.currentTutor) {
+    orderForm.value = transformOrderData(tutorStore.currentTutor)
+    showIdInput.value = false
+  } else {
+    // 否则显示订单号输入框
+    showIdInput.value = true
+  }
 })
 </script>
 
-<style scoped lang="scss">
-.tutor-edit {
-  padding: 20px;
-  
-  .box-card {
-    max-width: 800px;
-    margin: 0 auto;
+<style lang="scss" scoped>
+.page-content {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+
+  .header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 15px;
+
+    h3 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-right: 20px;
+      white-space: nowrap;
+    }
   }
-  
-  .card-header {
-    font-size: 18px;
-    font-weight: bold;
+
+  .order-id-input {
+    margin-bottom: 20px;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    :deep(.el-form-item__content) {
+      justify-content: flex-end;
+      margin-left: 0 !important;
+    }
   }
 }
 </style>
+

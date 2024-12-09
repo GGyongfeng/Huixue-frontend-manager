@@ -64,6 +64,7 @@ axiosInstance.interceptors.response.use(
 
     // 处理成功响应
     if (code === 200) {
+      console.log('响应数据:', data)
       return response
     }
 

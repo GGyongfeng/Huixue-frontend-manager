@@ -29,6 +29,48 @@ export const upgradeLogList = ref([
   },
   {
     version: 'v0.0.1',
+    title: '订单列表- 支持excel导入导出',
+    date: '2024-11-13',
+    status: 'complete',
+    statusText: '完成'
+  },
+  {
+    version: 'v0.0.1',
+    title: '订单列表- 支持一键复制为微信消息、支持选择多项',
+    date: '2024-11-12',
+    status: 'complete',
+    statusText: '完成'
+  },
+  {
+    version: 'v0.0.1',
+    title: '创建订单- 支持复制消息一键创建',
+    date: '2024-11-11',
+    status: 'complete',
+    statusText: '完成'
+  },
+  {
+    version: 'v0.0.1',
+    title: '订单编辑页面- 界面完善',
+    date: '2024-11-10',
+    status: 'complete',
+    statusText: '完成'
+  },
+  {
+    version: 'v0.0.1',
+    title: '订单编辑页面- 功能创建',
+    date: '2024-11-10',
+    status: 'complete',
+    statusText: '完成'
+  },
+  {
+    version: 'v0.0.1',
+    title: '"订单创建页面"- 功能完善 -多草稿 本地储存',
+    date: '2024-11-9',
+    status: 'complete',
+    statusText: '完成'
+  },
+  {
+    version: 'v0.0.1',
     title: '创建订单，响应式界面，简化菜单',
     date: '2024-11-8',
     status: 'complete',

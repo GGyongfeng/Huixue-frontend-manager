@@ -67,12 +67,12 @@ export const queryApis = {
 
   /**
    * 获取订单详情
-   * @param id 订单ID
+   * @param orderCode 订单编号
    * @returns 返回单个订单的详细信息
    */
-  getTutorDetail: (id: number) => {
+  getTutorDetail: (orderCode: string) => {
     return request.get<BaseResult & { data: TutorOrder }>({
-      url: `/api/manager/tutors/detail/${id}`
+      url: `/api/manager/tutors/detail/${orderCode}`
     })
   }
 } 

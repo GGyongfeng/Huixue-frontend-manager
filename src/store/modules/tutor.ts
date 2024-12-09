@@ -44,7 +44,7 @@ export const useTutorStore = defineStore('tutor', {
   
   actions: {
     // 设置当前选中的订单
-    setCurrentTutor(tutor: TutorOrder | null) {
+    setCurrentTutor(tutor: TutorOrder) {
       this.currentTutor = tutor
     },
     
