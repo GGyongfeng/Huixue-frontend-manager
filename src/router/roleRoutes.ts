@@ -127,5 +127,29 @@ export const roleRoutes: AppRouteRecordRaw[] = [
             }
           }
         ]
+      },
+      {
+        path: '/notification',
+        name: 'Notice',
+        component: Home,
+        meta: {
+          title: '通知编辑',
+          title_en: 'Teacher notice',
+          icon: 'e84f',
+          noMenu: true
+        },
+        children: [
+          {
+            path: '/notification/update',
+            name: 'NotificationUpdate',
+            component: () => import('@/views/notification/update.vue'),
+            meta: {
+              title: '更新通知',
+              title_en: 'Notice update',
+              icon: 'form',
+              noMenu: false
+            }
+          }
+        ]
       }
   ]

@@ -21,6 +21,8 @@ import './mock/mock'                                 // 数据 mock
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { setupGlobDirectives } from './directives'
 import language from './language'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
 
 const app = createApp(App)
 initStore(app)
@@ -29,6 +31,7 @@ registerGlobComp(app)
 setupGlobDirectives(app)
 
 app.use(language)
+app.use(Antd)
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
