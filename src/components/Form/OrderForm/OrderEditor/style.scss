@@ -50,6 +50,11 @@
         padding-right: 4px;
       }
 
+      // 添加：移动端隐藏二级标题
+      .secondary-label {
+        display: none !important;
+      }
+
       .el-row {
         .el-col {
           margin-bottom: 15px;

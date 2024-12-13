@@ -21,22 +21,23 @@ export interface TutorOrder {
   student_gender: Gender     // 学生性别
   teaching_type: TeachingType  // 教学类型
   student_grade: StudentGrade  // 学生年级
-  subjects: string[]         // 补习科目（可多选）
-  teacher_type: TeacherType  // 教师类型要求
-  teacher_gender: '男' | '女' | '无'  // 教师性别要求
-  order_tags: string[]      // 订单标签（可多选）
+  subjects: Subject[]         // 补习科目（可多选）
+  teacher_type: TeacherType[]  // 教师类型要求（可多选）
+  teacher_gender: Gender[]     // 教师性别要求（可多选）
+  order_tags: OrderTag[]      // 订单标签（可多选）
   city: City                 // 城市
   district: District<City>    // 区域，根据城市动态变化
   address: string           // 详细地址
-  grade_score?: string      // 成绩情况
-  student_level?: StudentLevel  // 学生水平
+  grade_score: string      // 成绩情况
+  student_level: StudentLevel  // 学生水平
   tutoring_time: string     // 辅导时间
   salary: string           // 课时费
-  requirement_desc?: string // 具体要求
-  phone_number?: string     // 联系电话
+  requirement_desc: string // 具体要求
+  subjects_desc: string   // 科目详细说明
+  phone_number: string     // 联系电话
   order_source?: string    // 订单来源
-  is_visible?: boolean     // 是否可见
-  status?: '已成交' | '未成交'  // 订单状态
+  is_visible: boolean     // 是否可见
+  status: '未成交' | '已成交' | '已过期'  // 订单状态
   created_at?: string      // 创建时间
   created_by?: number      // 创建人ID
   updated_at?: string      // 更新时间

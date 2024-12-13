@@ -78,7 +78,7 @@ export const ALL_COLUMNS: TableColumn[] = [
   },
   { 
     prop: 'subjects', 
-    label: '补习科目', 
+    label: '科目筛选', 
     width: FOUR_CHAR_LABEL_WIDTH,
     formatter: (row: TutorOrder) => Array.isArray(row.subjects) ? row.subjects.join('、') : row.subjects,
     visible: true,
@@ -87,6 +87,13 @@ export const ALL_COLUMNS: TableColumn[] = [
       type: 'multiple',
       options: [...ORDER_ITEM_OPTIONS.subjects]
     }
+  },
+  { 
+    prop: 'subjects_desc', 
+    label: '科目详细说明', 
+    width: 200,
+    visible: true,
+    comment: '补习科目详细说明',
   },
   { 
     prop: 'teacher_type', 
@@ -135,20 +142,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     visible: true,
     comment: '详细地址'
   },
-  { 
-    prop: 'phone_number', 
-    label: '联系电话', 
-    width: 200,
-    visible: true,
-    comment: '联系电话'
-  },
-  { 
-    prop: 'order_source', 
-    label: '订单来源', 
-    width: 200,
-    visible: true,
-    comment: '订单来源'
-  },
+  
   { 
     prop: 'grade_score', 
     label: '成绩情况', 
@@ -180,6 +174,27 @@ export const ALL_COLUMNS: TableColumn[] = [
     width: FOUR_CHAR_LABEL_WIDTH,
     visible: true,
     comment: '每小时费用'
+  },
+  { 
+    prop: 'requirement_desc', 
+    label: '具体要求', 
+    width: 200,
+    visible: true,
+    comment: '具体要求'
+  },
+  { 
+    prop: 'phone_number', 
+    label: '联系电话', 
+    width: 200,
+    visible: true,
+    comment: '联系电话'
+  },
+  { 
+    prop: 'order_source', 
+    label: '订单来源', 
+    width: 200,
+    visible: true,
+    comment: '订单来源'
   },
   { 
     prop: 'is_visible', 

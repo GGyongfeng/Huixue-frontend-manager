@@ -34,8 +34,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { Setting, InfoFilled } from '@element-plus/icons-vue'
 import type { CheckboxValueType } from 'element-plus'
-import type { TableColumn } from '@/types/tutorMenuList'
-import type { TutorOrder } from '@/types/tutorOrder'
+// import type { TableColumn } from '@/types/tutorMenuList'
+// import type { TutorOrder } from '@/types/tutorOrder'
 import { ALL_COLUMNS, DEFAULT_COLUMNS } from '@/types/tutorMenuList'
 
 // 使用所有列配置

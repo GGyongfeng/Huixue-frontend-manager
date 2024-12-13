@@ -1,17 +1,48 @@
 import { defineStore } from 'pinia'
 import { LanguageEnum } from '@/enums/appEnum'
 import { router } from '@/router'
-import { UserInfo } from '@/types/store'
+import { UserInfo, UserDetailInfo } from '@/types/store'
 import { useSettingStore } from './setting'
 import { useWorktabStore } from './worktab'
 import { getSysStorage } from '@/utils/storage'
 import { MenuListType } from '@/types/menu'
 
 interface UserState {
-  language: LanguageEnum // 语言
-  isLogin: boolean // 是否登录
-  info: Partial<UserInfo> // 用户信息
-  searchHistory: MenuListType[] // 搜索历史
+  language: LanguageEnum
+  isLogin: boolean
+  info: UserInfo
+  searchHistory: MenuListType[]
+}
+
+// 创建默认的用户信息对象
+const defaultUserInfo: UserInfo = {
+  id: undefined,
+  name: '',
+  username: '',
+  avatar: '',
+  role: '',
+  city: '天津',
+  token: undefined,
+  userInfo: {
+    id: null,
+    username: '',
+    password: '',
+    role: '',
+    created_at: '',
+    resignation_time: null,
+    city: '天津',
+    is_deleted: null,
+    avatar_url: null,
+    real_name: null,
+    nick_name: null,
+    email: null,
+    mobile: null,
+    address: null,
+    gender: null,
+    description: null,
+    education: null,
+    tags: null
+  }
 }
 
 export const useUserStore = defineStore({
@@ -19,7 +50,7 @@ export const useUserStore = defineStore({
   state: (): UserState => ({
     language: LanguageEnum.ZH,
     isLogin: false,
-    info: {},
+    info: { ...defaultUserInfo },
     searchHistory: []
   }),
   getters: {
@@ -45,7 +76,7 @@ export const useUserStore = defineStore({
           this.info = info
           this.isLogin = isLogin || false
         } else {
-          this.info = {}
+          this.info = { ...defaultUserInfo }
           this.isLogin = false
         }
 
@@ -81,7 +112,7 @@ export const useUserStore = defineStore({
     logOut() {
       setTimeout(() => {
         document.getElementsByTagName('html')[0].removeAttribute('class') // 移除暗黑主题
-        this.info = {}
+        this.info = { ...defaultUserInfo }
         this.isLogin = false
         useWorktabStore().opened = []
         this.saveUserData()

@@ -2,6 +2,12 @@ import request from '@/middleware'
 import { BaseResult } from '@/types/axios'
 import { TutorOrder } from '@/types/tutorOrder'
 
+// 添加批量更新状态的参数接口定义
+interface BatchStatusParams {
+  teacherId: number | null
+  status: '已成交' | '未成交'
+}
+
 /**
  * 家教订单修改模块
  * 包含所有修改相关的API方法（增删改）
@@ -36,44 +42,56 @@ export const mutationApis = {
 
   /**
    * 删除订单
-   * @param id 要删除的订单ID
+   * @param ids 要删除的订单ID或ID数组
    * @returns 返回删除结果
    */
-  deleteTutor: (id: number) => {
-    try {
-      return request.del<BaseResult>({
-        url: `/api/manager/tutors/delete/${id}`
-      })
-    } catch (error) {
-      console.error('删除请求失败:', error)
-      return Promise.reject(error)
-    }
+  deleteTutor: (ids: number | number[]) => {
+    // 确保 ids 始终是数组
+    const idArray = Array.isArray(ids) ? ids : [ids]
+
+    return request.post<BaseResult>({
+      url: '/api/manager/tutors/delete',
+      data: { ids: idArray }
+    })
   },
 
   /**
    * 修改订单状态
-   * @param id 订单ID
-   * @param status 新状态值
+   * @param ids 订单ID或ID数组
+   * @param status 新状态值 (0: 隐藏, 1: 显示)
    * @returns 返回状态修改结果
    */
-  updateTutorStatus: (id: number, status: number) => {
+  updateTutorStatus: (ids: number | number[], status: 0 | 1) => {
+    // 确保 ids 始终是数组
+    const idArray = Array.isArray(ids) ? ids : [ids]
+    
     return request.put<BaseResult>({
       url: `/api/manager/tutors/status`,
-      data: { id, status }
+      data: { 
+        ids: idArray, 
+        status 
+      }
     })
   },
 
   /**
    * 更新订单成交状态
+   * @param ids 订单ID或ID数组
+   * @param params 状态参数
    */
-  updateOrderDealStatus: (id: number, params: {
-    teacherId?: number | null
+  updateOrderDealStatus: (ids: number | number[], params: {
+    teacherId: number | null
     status: '已成交' | '未成交'
   }) => {
+    // 确保 ids 始终是数组
+    const idArray = Array.isArray(ids) ? ids : [ids]
 
     return request.put<BaseResult>({
-      url: `/api/manager/tutors/deal/${id}`,
-      data: params,
+      url: '/api/manager/tutors/deal',
+      data: {
+        ids: idArray,
+        ...params
+      },
       headers: {
         'Content-Type': 'application/json'
       }

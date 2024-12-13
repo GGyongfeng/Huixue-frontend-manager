@@ -29,8 +29,7 @@ const SUBJECTS = [
 
 const TEACHER_TYPES = [
   '在职老师',
-  '985学生',
-  '无'
+  '985学生'
 ] as const
 
 const STUDENT_LEVELS = [
@@ -55,18 +54,116 @@ const ORDER_TAGS = [
 
 const DISTRICTS = {
   '天津': [
-    '南开区',
     '和平区',
-    '河西区',
     '河东区',
+    '河西区',
+    '南开区',
     '河北区',
     '红桥区',
+    '东丽区',
+    '西青区',
     '津南区',
-    '滨海新区'
+    '北辰区',
+    '武清区',
+    '宝坻区',
+    '滨海新区',
+    '宁河区',
+    '静海区',
+    '蓟州区',
+    '线上',
+    '其他'
   ] as const,
+  
   '北京': [
+    '东城区',
+    '西城区',
     '朝阳区',
-    '海淀区'
+    '丰台区',
+    '石景山区',
+    '海淀区',
+    '门头沟区',
+    '房山区',
+    '大兴区',
+    '通州区',
+    '顺义区',
+    '昌平区',
+    '怀柔区',
+    '平谷区',
+    '密云区',
+    '延庆区',
+    '线上',
+    '其他'
+  ] as const,
+
+  '西安': [
+    '新城区',
+    '碑林区',
+    '莲湖区',
+    '灞桥区',
+    '未央区',
+    '雁塔区',
+    '阎良区',
+    '临潼区',
+    '长安区',
+    '高陵区',
+    '鄠邑区',
+    '线上',
+    '其他'
+  ] as const,
+
+  '上海': [
+    '黄浦区',
+    '徐汇区',
+    '长宁区',
+    '静安区',
+    '普陀区',
+    '虹口区',
+    '杨浦区',
+    '浦东新区',
+    '闵行区',
+    '宝山区',
+    '嘉定区',
+    '金山区',
+    '松江区',
+    '青浦区',
+    '奉贤区',
+    '崇明区',
+    '线上',
+    '其他'
+  ] as const,
+
+  '南京': [
+    '玄武区',
+    '秦淮区',
+    '建邺区',
+    '鼓楼区',
+    '栖霞区',
+    '雨花台区',
+    '江宁区',
+    '浦口区',
+    '六合区',
+    '溧水区',
+    '高淳区',
+    '线上',
+    '其他'
+  ] as const,
+
+  '武汉': [
+    '江岸区',
+    '江汉区',
+    '硚口区',
+    '汉阳区',
+    '武昌区',
+    '青山区',
+    '洪山区',
+    '东西湖区',
+    '蔡甸区',
+    '江夏区',
+    '黄陂区',
+    '新洲区',
+    '汉南区',
+    '线上',
+    '其他'
   ] as const
 } as const
 
@@ -100,8 +197,8 @@ export const getDefaultOrderSelection = (userCity: City = '天津') => ({
   teaching_type: '一对一' as TeachingType,
   student_grade: '幼儿' as StudentGrade,
   subjects: [] as Subject[],
-  teacher_type: '无' as TeacherType,
-  teacher_gender: '无' as ('男' | '女' | '无'),
+  teacher_type: [] as TeacherType[],
+  teacher_gender: [] as Gender[],
   order_tags: [] as OrderTag[],
   city: userCity,
   district: DISTRICTS[userCity][0],
@@ -112,6 +209,8 @@ export const getDefaultOrderSelection = (userCity: City = '天津') => ({
   salary: '',
   phone_number: '',
   requirement_desc: '',
+  subjects_desc: '',
+  order_source: '',
   is_visible: true,
   status: '未成交' as const
 })

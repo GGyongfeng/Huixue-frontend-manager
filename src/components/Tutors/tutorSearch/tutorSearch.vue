@@ -14,6 +14,14 @@
           <el-icon><Refresh /></el-icon>
           <span class="button-text">重置</span>
         </el-button>
+        <el-button 
+          :type="multipleSelection ? 'primary' : 'default'"
+          class="icon-button" 
+          @click="toggleMultipleSelection"
+        >
+          <el-icon><Select /></el-icon>
+          <span class="button-text">{{ multipleSelection ? '退出多选' : '批量操作' }}</span>
+        </el-button>
         <ColumnSelector @change="$emit('column-change', $event)" />
       </el-form-item>
     </el-form>
@@ -22,7 +30,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Search, Setting, Refresh } from '@element-plus/icons-vue'
+import { Search, Setting, Refresh, Select } from '@element-plus/icons-vue'
 import type { tutorQueryParams } from '@/types/tutorOrder'
 import ColumnSelector from '../TableColumnSelector/ColumnSelector.vue'
 import { useTutorStore } from '@/store/modules/tutor'
@@ -32,6 +40,7 @@ import './style.scss'
 const emit = defineEmits<{
   (e: 'search', params: Partial<tutorQueryParams>): void
   (e: 'column-change', columns: string[]): void
+  (e: 'multiple-selection-change', enabled: boolean): void
 }>()
 
 const tutorStore = useTutorStore()
@@ -42,6 +51,13 @@ const searchForm = ref<Partial<tutorQueryParams>>({
 })
 
 const showMobileSearch = ref(false)
+
+const multipleSelection = ref(false)
+
+const toggleMultipleSelection = () => {
+  multipleSelection.value = !multipleSelection.value
+  emit('multiple-selection-change', multipleSelection.value)
+}
 
 const handleSearch = () => {
   const params = { ...searchForm.value }
