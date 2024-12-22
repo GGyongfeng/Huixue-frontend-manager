@@ -5,5 +5,11 @@
  * mittBus.emit('event', data)
  */
 import mitt from 'mitt'
-const mittBus = mitt()
-export default mittBus
+
+type Events = {
+    'refresh-tutor-list': void
+}
+
+const emitter = mitt<Events>()
+
+export default emitter

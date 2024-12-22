@@ -46,6 +46,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import OrderEditCard from '@/components/Form/OrderForm/OrderEditor/index.vue'
 import type { TutorOrder } from '@/types/tutorOrder'
+import type { Subject } from '@/types/OrderOptions'
 import { useTutorStore } from '@/store/modules/tutor'
 import { queryApis } from '@/api/tutors/query'
 import { mutationApis } from '@/api/tutors/mutation'
@@ -65,11 +66,14 @@ const showIdInput = ref(false)
 
 // 数据转换函数
 const transformOrderData = (data: TutorOrder) => {
-  return {
+  const result = {
     ...data,
-    subjects: Array.isArray(data.subjects) ? data.subjects : [data.subjects],
-    order_tags: Array.isArray(data.order_tags) ? data.order_tags : [data.order_tags]
-  }
+    subjects: typeof data.subjects === 'string' 
+      ? (data.subjects as string).split(/[,，]/).map((s: string) => s.trim()).filter(Boolean) as Subject[]
+      : data.subjects,
+    order_tags: Array.isArray(data.order_tags) ? data.order_tags : []
+  } as TutorOrder
+  return result
 }
 
 // 获取订单详情
@@ -89,8 +93,10 @@ const fetchOrderDetail = async () => {
   try {
     loading.value = true
     const res = await queryApis.getTutorDetail(orderId.value)
+    
     if (res.code === 200 && res.data) {
-      orderForm.value = transformOrderData(res.data)
+      const transformedData = transformOrderData(res.data)
+      orderForm.value = transformedData
     } else {
       ElMessage.error(res.message || '获取订单详情失败')
     }
@@ -115,12 +121,16 @@ const submitForm = async () => {
 
     loading.value = true
     
-    // 打印表单数据到控制台
-    console.log('提交的表单数据:', orderForm.value)
-    
-    // 模拟成功响应
-    ElMessage.success('更新成功（测试）')
-    router.push('/tutors/list')
+    // 调用更新API
+    const res = await mutationApis.updateTutor(orderForm.value)
+
+    if (res.code === 200) {
+      ElMessage.success('更新成功')
+      // 更新成功后返回列表页
+      router.push('/tutors/list')
+    } else {
+      ElMessage.error(res.message || '更新失败')
+    }
     
   } catch (error) {
     console.error('更新订单失败:', error)

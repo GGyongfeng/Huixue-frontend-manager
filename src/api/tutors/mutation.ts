@@ -31,11 +31,10 @@ export const mutationApis = {
    * @returns 返回更新结果
    */
   updateTutor: (data: TutorOrder) => {
-    const { id, ...restData } = data
-    
+    console.log('更新订单数据:', data)
     return request.put<BaseResult>({
-      url: `/api/manager/tutors/update/${id}`,
-      data: restData
+      url: `/api/manager/tutors/update`,
+      data: data
     })
     
   },

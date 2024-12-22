@@ -175,7 +175,6 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
                     addressMatch.includes('网课') || 
                     addressMatch.includes('在线') || 
                     addressMatch.includes('远程')) {
-                    console.log('检测到线上��课')
                     order.district = '线上' as any
                     return
                 }
@@ -219,6 +218,8 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
             }
             
             if (requirementDesc) {
+                // 清理末尾的标点符号
+                requirementDesc = requirementDesc.replace(/[，,。.、""：:；;!！?？]+$/g, '').trim()
                 order.requirement_desc = requirementDesc
             }
             

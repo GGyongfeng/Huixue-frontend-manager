@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTutorStore } from '@/store/modules/tutor'
 import TutorSearch from '@/components/Tutors/tutorSearch/tutorSearch.vue'
@@ -50,6 +50,7 @@ import { CreateDialog, EditDialog, DeleteDialog } from '@/components/Tutors/dial
 import { DEFAULT_TABLE_CONFIG, ALL_COLUMNS } from '@/types/tutorMenuList'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { mutationApis } from '@/api/tutors/mutation'
+import { refreshTutorList } from '@/utils/tutorUtils'
 
 const router = useRouter()
 
@@ -266,10 +267,15 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-// 保持原有的 onMounted
-onMounted(() => {
-  initTableConfig()
-  fetchTutorList(tutorStore.searchParams)
+// 添加 activated 钩子
+onActivated(async () => {
+    await fetchTutorList(tutorStore.searchParams)
+})
+
+// 修改 onMounted
+onMounted(async () => {
+    initTableConfig()
+    await fetchTutorList(tutorStore.searchParams)
 })
 
 // 成功回调
