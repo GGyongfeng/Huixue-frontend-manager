@@ -11,13 +11,7 @@
               <el-tab-pane v-for="draft in draftList" :key="draft.id" :label="draft.data.tutor_code || '未命名草稿'"
                 :name="draft.id" />
             </el-tabs>
-            <el-button 
-              v-if="draftList.length > 0"
-              class="clear-all-btn" 
-              type="danger" 
-              link
-              @click="confirmClearAll"
-            >
+            <el-button v-if="draftList.length > 0" class="clear-all-btn" type="danger" link @click="confirmClearAll">
               清空草稿
             </el-button>
           </div>
@@ -54,10 +48,7 @@
     </OrderEditCard>
 
     <!-- 添加批量上传对话框 -->
-    <BatchUploadDialog
-      v-model="batchUploadVisible"
-      @confirm="handleBatchUpload"
-    />
+    <BatchUploadDialog v-model="batchUploadVisible" @confirm="handleBatchUpload" />
   </div>
 </template>
 
@@ -299,13 +290,13 @@ const handleBatchUpload = (text: string) => {
   }
 
   const orders = parseMultipleOrders(text, userCity.value)
-  
+
   // 如果只有一个订单，直接更新当前表单
   if (orders.length === 1) {
     Object.assign(orderForm.value, orders[0])
     return
   }
-  
+
   // 如果有多个订单，为每个订单创建一个新草稿
   orders.forEach((order, index) => {
     // 第一个订单更新当前表单
@@ -325,7 +316,7 @@ const handleBatchUpload = (text: string) => {
       draftList.value.push(newDraft)
     }
   })
-  
+
   // 保存草稿列表
   saveDraftList()
 }
@@ -356,6 +347,8 @@ const confirmClearAll = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss' as vars;
+
 .page-content {
   width: 100%;
   height: 100%;
@@ -382,16 +375,16 @@ const confirmClearAll = () => {
         display: flex;
         align-items: center;
         width: 100%;
-        
+
         .draft-tabs-container {
           flex: 1;
           overflow: hidden;
         }
-        
+
         .clear-all-btn {
           margin-left: 16px;
           font-size: 14px;
-          
+
           &:hover {
             opacity: 0.8;
           }
@@ -400,16 +393,20 @@ const confirmClearAll = () => {
 
       .tabs-scrollbar {
         width: 100%;
+
         :deep(.el-scrollbar__wrap) {
           height: 100%;
         }
+
         // 美化滚动条
         :deep(.el-scrollbar__bar) {
           opacity: 0;
           transition: opacity 0.3s;
+
           &.is-vertical {
             width: 4px;
           }
+
           &:hover {
             opacity: 0.3;
           }
@@ -481,5 +478,19 @@ const confirmClearAll = () => {
 .clear-all-btn {
   margin-top: 10px;
   margin-left: 10px;
+}
+
+// 平板
+@media screen and (max-width: vars.$device-ipad) {
+  .page-content {
+    padding: 0px;
+  }
+}
+
+// 手机
+@media screen and (max-width: vars.$device-phone) {
+  .page-content {
+    padding: 0px;
+  }
 }
 </style>

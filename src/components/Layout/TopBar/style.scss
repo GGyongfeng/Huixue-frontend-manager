@@ -156,6 +156,8 @@
     background: var(--art-bg-color);
 
     > .left {
+      display: flex;
+      align-items: center;
       line-height: 60px;
 
       .top-header {
@@ -178,16 +180,33 @@
 
       .svg-icon {
         display: none;
-        width: 30px;
-        padding-left: 15px;
-        overflow: hidden;
-        vertical-align: -0.15em;
-        fill: currentcolor;
+        width: 20px;
+        height: 20px;
+        margin: 0 10px;
+        cursor: pointer;
+        fill: var(--art-text-gray-800);
+        transition: all 0.3s;
+        vertical-align: middle;
+
+        &:hover {
+          fill: var(--art-text-gray-900);
+        }
       }
 
       .el-route {
         margin-left: 10px;
         line-height: 60px;
+      }
+
+      .btn-box {
+        display: flex;
+        align-items: center;
+        
+        .btn {
+          i {
+            font-size: 20px;
+          }
+        }
       }
     }
 

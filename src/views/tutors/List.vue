@@ -39,23 +39,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, onActivated } from 'vue'
+import { ref, computed, onMounted, nextTick, onActivated, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTutorStore } from '@/store/modules/tutor'
+import { useUserStore } from '@/store/modules/user'
 import TutorSearch from '@/components/Tutors/tutorSearch/tutorSearch.vue'
 import TutorTable from '@/components/Tutors/tutorTable/tutorTable.vue'
 import type { tutorQueryParams, TutorOrder, TutorResponse } from '@/types/tutorOrder'
 import { TutorsService } from '@/api/tutors'
 import { CreateDialog, EditDialog, DeleteDialog } from '@/components/Tutors/dialogs'
-import { DEFAULT_TABLE_CONFIG, ALL_COLUMNS } from '@/types/tutorMenuList'
+import { getDefaultTableConfig, getAllColumns, type TableConfig, type TableColumn } from '@/types/tutorMenuList'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { mutationApis } from '@/api/tutors/mutation'
 import { refreshTutorList } from '@/utils/tutorUtils'
+import type { City } from '@/config/cityConfig'
 
 const router = useRouter()
 
 // 使用 store
 const tutorStore = useTutorStore()
+const userStore = useUserStore()
+const userCity = computed(() => (userStore.info?.userInfo?.city || '天津') as City)
 
 // 响应式数据
 const loading = ref(false)
@@ -73,7 +77,21 @@ const deleteVisible = ref(false)
 const currentTutor = ref<TutorOrder | undefined>(undefined)
 const currentId = ref<number>()
 
-const tableConfig = ref({ ...DEFAULT_TABLE_CONFIG })
+// 获取表格配置
+const tableConfig = ref<TableConfig>(getDefaultTableConfig(userCity.value))
+
+// 监听 store 中配置的变化
+watch(() => tutorStore.tableConfig, (newConfig) => {
+  tableConfig.value = newConfig
+}, { deep: true })
+
+// 监听城市变化
+watch(userCity, (newCity) => {
+  const stored = localStorage.getItem('tutorTableColumns')
+  if (!stored) {
+    tableConfig.value = getDefaultTableConfig(newCity)
+  }
+})
 
 // 多选状态
 const multipleSelection = ref(false)
@@ -211,38 +229,34 @@ const handleBatchStatus = async (rows: TutorOrder[]) => {
     }
 }
 
-// 获取订单列表函数
+// 获取订单列表
 const fetchTutorList = async (params?: Partial<tutorQueryParams>) => {
-    try {
-        // 使用 store 中的 searchParams 作为默认值
-        const searchParams = params || tutorStore.searchParams
-        const res = await TutorsService.getTutorList(searchParams)
-
-        if (res.code === 200) {
-            loading.value = true
-
-            // 确保每条数据都有状态值
-            tutorList.value = res.data.list.map(item => ({
-                ...item,
-                status: item.status || '未成交'  // 设置默认状态
-            }))
-            total.value = res.data.total
-
-            // store 赋值
-            tutorStore.setTutorList(tutorList.value)
-            tutorStore.setTotal(res.data.total)
-        }
-    } catch (error) {
-        console.error('获取订单列表失败:', error)
-    } finally {
-        loading.value = false
+  try {
+    loading.value = true
+    console.log('开始获取订单列表，参数:', params)  // 添加日志
+    
+    const res = await TutorsService.getTutorList(params || queryParams.value)
+    console.log('获取订单列表响应:', res)  // 添加日志
+    
+    if (res.code === 200) {
+      tutorList.value = res.data.list
+      total.value = res.data.total
+    } else {
+      throw new Error(res.message || '获取订单列表失败')
     }
+  } catch (error) {
+    console.error('获取订单列表失败:', error)
+    ElMessage.error('获取订单列表失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 // 处理搜索
-const handleSearch = (params: Partial<tutorQueryParams>) => {
-    // console.log('List组件收到搜索参数:', params)
-    fetchTutorList(params)
+const handleSearch = async (params: Partial<tutorQueryParams>) => {
+  console.log('搜索参数:', params)  // 添加日志
+  tutorStore.updateSearchParams(params)
+  await fetchTutorList(tutorStore.searchParams)
 }
 
 // 处理分页
@@ -272,10 +286,26 @@ onActivated(async () => {
     await fetchTutorList(tutorStore.searchParams)
 })
 
-// 修改 onMounted
+// 初始化
 onMounted(async () => {
+  console.log('List组件mounted')  // 添加日志
+  try {
+    // 1. 初始化表格配置
     initTableConfig()
+    console.log('表格配置初始化完成')  // 添加日志
+    
+    // 2. 初始化搜索参数
+    tutorStore.initSearchParams()
+    console.log('搜索参数初始化完成')  // 添加日志
+    
+    // 3. 获取列表数据
     await fetchTutorList(tutorStore.searchParams)
+    console.log('初始数据加载完成')  // 添加日志
+  } catch (error) {
+    console.error('初始化失败:', error)
+    ElMessage.error('初始化失败')
+    loading.value = false
+  }
 })
 
 // 成功回调
@@ -377,40 +407,50 @@ const handleStatusChange = async (row: TutorOrder) => {
 }
 
 // 处理列变化
-const handleColumnsChange = (selectedColumns: string[]) => {  
-    // 从所有列筛选用户选择的列，并保持其他配置不变
-    tableConfig.value = {
-        ...DEFAULT_TABLE_CONFIG,
-        columns: ALL_COLUMNS.filter(col => selectedColumns.includes(col.prop))
-    }
+const handleColumnsChange = (selectedColumns: string[]) => {
+  const newColumns = getAllColumns(userCity.value).filter(col => 
+    selectedColumns.includes(col.prop)
+  )
+  
+  // 更新配置
+  tableConfig.value = {
+    ...tableConfig.value,
+    columns: newColumns
+  }
+  
+  // 同时更新 store
+  tutorStore.setTableConfig(tableConfig.value)
 }
 
 // 初始化表格配置
 const initTableConfig = () => {
-    // 从 localStorage 获取保存的列配置
-    const stored = localStorage.getItem('tutorTableColumns')
-    
-    if (stored) {
-        try {
-            const selectedColumns = JSON.parse(stored)
-            
-            // 使用保存的列配置初始化表格
-            tableConfig.value = {
-                ...DEFAULT_TABLE_CONFIG,
-                columns: ALL_COLUMNS.filter(col => selectedColumns.includes(col.prop))
-            }
-        } catch (e) {
-            console.error('解析列配置失败，使用默认配置:', e)
-            tableConfig.value = { ...DEFAULT_TABLE_CONFIG }
-        }
-    } else {
-        console.log('List - 未找到保存的列配置，使用默认配置')
-        tableConfig.value = { ...DEFAULT_TABLE_CONFIG }
+  const stored = localStorage.getItem('tutorTableColumns')
+  
+  if (stored) {
+    try {
+      const selectedColumns = JSON.parse(stored)
+      const newColumns = getAllColumns(userCity.value).filter(col => 
+        selectedColumns.includes(col.prop)
+      )
+      
+      const newConfig: TableConfig = {
+        ...getDefaultTableConfig(userCity.value),
+        columns: newColumns
+      }
+      
+      tutorStore.setTableConfig(newConfig)
+    } catch (e) {
+      tutorStore.setTableConfig(getDefaultTableConfig(userCity.value))
     }
+  } else {
+    tutorStore.setTableConfig(getDefaultTableConfig(userCity.value))
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/variables.scss' as vars;
+
 .tutor-list {
     padding: 20px;
     
@@ -419,6 +459,24 @@ const initTableConfig = () => {
         justify-content: space-between;
         align-items: center;
         margin-bottom: 16px;
+    }
+}
+
+// 平板
+@media screen and (max-width: vars.$device-ipad) {
+    .tutor-list {
+        padding: 10px;
+    }
+}
+
+// 手机
+@media screen and (max-width: vars.$device-phone) {
+    .tutor-list {
+        padding: 0;
+        
+        .table-header {
+            padding: 0 10px;
+        }
     }
 }
 </style>

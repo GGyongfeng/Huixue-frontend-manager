@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Setting, InfoFilled } from '@element-plus/icons-vue'
 import type { CheckboxValueType } from 'element-plus'
 // import type { TableColumn } from '@/types/tutorMenuList'
@@ -91,15 +91,32 @@ const handleCheckedChange = (value: string[]) => {
   emitChange()
 }
 
-const emit = defineEmits<{
-  (e: 'change', columns: string[]): void
+// 添加 props 接收当前选中的列
+const props = defineProps<{
+  modelValue?: string[]
 }>()
 
-// 发送变化事件并保存设置
+// 修改 emit 定义，添加 update:modelValue
+const emit = defineEmits<{
+  (e: 'change', columns: string[]): void
+  (e: 'update:modelValue', columns: string[]): void
+}>()
+
+// 修改 emitChange 函数
 const emitChange = () => {
   saveColumnsToStore(selectedColumns.value)
   emit('change', selectedColumns.value)
+  emit('update:modelValue', selectedColumns.value)
 }
+
+// 添加 watch 以响应外部变化
+watch(() => props.modelValue, (newVal) => {
+  if (newVal) {
+    selectedColumns.value = newVal
+    checkAll.value = newVal.length === columnOptions.length
+    isIndeterminate.value = newVal.length > 0 && newVal.length < columnOptions.length
+  }
+}, { deep: true })
 
 // 组件挂载时初始化选中状态
 onMounted(() => {

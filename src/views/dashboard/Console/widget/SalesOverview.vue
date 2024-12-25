@@ -128,7 +128,8 @@
 <style lang="scss" scoped>
   .region {
     box-sizing: border-box;
-    width: calc(58% - var(--console-margin));
+    // width: calc(58% - var(--console-margin));
+    width: 100%;
     height: 420px;
     padding: 20px 0 30px;
 

@@ -34,19 +34,6 @@
                 </el-radio-group>
             </el-form-item>
 
-            <el-form-item prop="teaching_type">
-                <template #label>
-                    <span class="primary-label">教学类型</span>
-                    <span class="label-colon">：</span>
-                    <span class="label-required">*</span>
-                </template>
-                <el-radio-group v-model="orderForm.teaching_type">
-                    <el-radio v-for="type in ORDER_ITEM_OPTIONS.teaching_types" :key="type" :value="type">
-                        {{ type }}
-                    </el-radio>
-                </el-radio-group>
-            </el-form-item>
-
             <el-form-item prop="student_grade">
                 <template #label>
                     <span class="primary-label">学生年级</span>
@@ -76,7 +63,7 @@
                 <template #label>
                     <span class="primary-label">补习科目</span>
                     <span class="label-colon">：</span>
-                    <span class="label-required"></span>
+                    <span class="label-required">*</span>
                 </template>
                 <el-input 
                     v-model="orderForm.subjects_desc" 
@@ -87,58 +74,33 @@
 
             <el-form-item>
                 <template #label>
-                    <span class="primary-label">地址信息</span>
+                    <span class="primary-label">现阶段成绩</span>
                     <span class="label-colon">：</span>
-                    <span class="label-required">*</span>
+                    <span class="label-required"></span>
                 </template>
-                <el-row :gutter="20">
-                    <el-col :xs="24" :sm="8">
-                        <el-form-item :label="isMobile ? '' : '城市：'" prop="city">
-                            <el-select 
-                                v-model="orderForm.city" 
-                                placeholder="请选择城市"
-                                :disabled="true"
-                            >
-                                <el-option 
-                                    v-for="city in Object.keys(ORDER_ITEM_OPTIONS.districts)" 
-                                    :key="city"
-                                    :label="city"
-                                    :value="city"
-                                    :disabled="city !== userCity"
-                                />
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :xs="24" :sm="8">
-                        <el-form-item :label="isMobile ? '' : '区域：'" prop="district">
-                            <el-select v-model="orderForm.district" placeholder="请选择区域">
-                                <el-option v-for="district in ORDER_ITEM_OPTIONS.districts[orderForm.city]"
-                                    :key="district" :label="district" :value="district" />
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :xs="24" :sm="8">
-                        <el-form-item :label="isMobile ? '' : '详细地址：'" prop="address">
-                            <el-input v-model="orderForm.address" placeholder="请输入详细地址" />
-                        </el-form-item>
-                    </el-col>
-                </el-row>
+                <el-input 
+                    v-model="orderForm.grade_score" 
+                    placeholder="请输入现阶段成绩" 
+                />
             </el-form-item>
 
             
 
             <el-form-item prop="tutoring_time">
                 <template #label>
-                    <span class="primary-label">辅导时间</span>
+                    <span class="primary-label">补习时间</span>
                     <span class="label-colon">：</span>
                     <span class="label-required">*</span>
                 </template>
-                <el-input v-model="orderForm.tutoring_time" placeholder="请输入辅导时间" />
+                <el-input v-model="orderForm.tutoring_time" placeholder="请输入补习时间" />
             </el-form-item>
+
+
+
 
             <el-form-item prop="salary">
                 <template #label>
-                    <span class="primary-label">课时费</span>
+                    <span class="primary-label">报价</span>
                     <span class="label-colon">：</span>
                     <span class="label-required">*</span>
                 </template>
@@ -147,32 +109,53 @@
 
             
 
-            <el-form-item>
-                <template #label>
-                    <span class="primary-label">学生情况</span>
-                    <span class="label-colon">：</span>
-                    <span class="label-required"></span>
-                </template>
-                <el-row :gutter="20">
-                    <el-col :xs="24" :sm="12">
-                        <el-form-item :label="isMobile ? '' : '成绩情况：'" prop="grade_score">
-                            <el-input v-model="orderForm.grade_score" placeholder="请输入成绩情况" />
-                        </el-form-item>
-                    </el-col>
-                    <el-col :xs="24" :sm="12">
-                        <el-form-item :label="isMobile ? '' : '学生水平：'" prop="student_level">
-                            <el-select v-model="orderForm.student_level" placeholder="请选择学生水平">
-                                <el-option label="优秀" value="优秀" />
-                                <el-option label="较好" value="较好" />
-                                <el-option label="中等" value="中等" />
-                                <el-option label="不及格" value="不及格" />
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form-item>
+            
+
 
             <el-form-item>
+                <template #label>
+                    <span class="primary-label">地址信息</span>
+                    <span class="label-colon">：</span>
+                    <span class="label-required">*</span>
+                </template>
+                <div class="address-inputs">
+                    <el-select 
+                        v-model="orderForm.city" 
+                        placeholder="请选择城市"
+                        :disabled="true"
+                        class="city-select"
+                    >
+                        <el-option 
+                            v-for="city in Object.keys(ORDER_ITEM_OPTIONS.districts)" 
+                            :key="city"
+                            :label="city"
+                            :value="city"
+                            :disabled="city !== userCity"
+                        />
+                    </el-select>
+                    <el-select 
+                        v-model="orderForm.district" 
+                        placeholder="请选择区域"
+                        class="district-select"
+                    >
+                        <el-option 
+                            v-for="district in ORDER_ITEM_OPTIONS.districts[orderForm.city]"
+                            :key="district" 
+                            :label="district" 
+                            :value="district" 
+                        />
+                    </el-select>
+                    <el-input 
+                        v-model="orderForm.address" 
+                        placeholder="请输入详细地址"
+                        class="address-input"
+                    />
+                </div>
+            </el-form-item>
+
+
+
+            <!-- <el-form-item>
                 <template #label>
                     <span class="primary-label">教师要求</span>
                     <span class="label-colon">：</span>
@@ -181,7 +164,7 @@
                 <el-row :gutter="40">
                     <el-col :xs="24" :sm="12">
                         <el-form-item :label="isMobile ? '' : '类型要求：'" prop="teacher_type">
-                            <el-select v-model="orderForm.teacher_type" multiple placeholder="请选择教师类型">
+                            <el-select v-model="orderForm.teacher_type" multiple placeholder="教师类型">
                                 <el-option v-for="type in ORDER_ITEM_OPTIONS.teacher_types" :key="type" :label="type"
                                     :value="type" />
                             </el-select>
@@ -189,22 +172,22 @@
                     </el-col>
                     <el-col :xs="24" :sm="12">
                         <el-form-item :label="isMobile ? '' : '性别要求：'" prop="teacher_gender">
-                            <el-select v-model="orderForm.teacher_gender" multiple placeholder="请选择教师性别">
+                            <el-select v-model="orderForm.teacher_gender" multiple placeholder="教师性别">
                                 <el-option v-for="gender in ORDER_ITEM_OPTIONS.gender_options" :key="gender"
                                     :label="gender" :value="gender" />
                             </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item prop="requirement_desc">
                 <template #label>
-                    <span class="primary-label">具体要求</span>
+                    <span class="primary-label">对老师要求</span>
                     <span class="label-colon">：</span>
                     <span class="label-required"></span>
                 </template>
-                <el-input v-model="orderForm.requirement_desc" type="textarea" :rows="4" placeholder="请输入具体要求" />
+                <el-input v-model="orderForm.requirement_desc" type="textarea" :rows="4" placeholder="请输入对老师要求" />
             </el-form-item>
 
             <el-form-item prop="phone_number">
@@ -294,12 +277,12 @@ watch(
 const rules = reactive<FormRules>({
     tutor_code: [{ required: true, message: '请输入订单编号', trigger: 'blur' }],
     student_gender: [{ required: true, message: '请选择学生性别', trigger: 'change' }],
-    teaching_type: [{ required: true, message: '请选择教学类型', trigger: 'change' }],
     student_grade: [{ required: true, message: '请选择学生年级', trigger: 'change' }],
     subjects: [{ required: true, message: '请选择补习科目', trigger: 'change' }],
+    subjects_desc: [{ required: true, message: '请输入科目详细说明', trigger: 'blur' }],
     district: [{ required: true, message: '请选择区域', trigger: 'change' }],
     address: [{ required: true, message: '请输入详细地址', trigger: 'blur' }],
-    tutoring_time: [{ required: true, message: '请输入辅导时间', trigger: 'blur' }],
+    tutoring_time: [{ required: true, message: '请输入补习时间', trigger: 'blur' }],
     salary: [{ required: true, message: '请输入课时费', trigger: 'blur' }],
     phone_number: [
         { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
@@ -309,8 +292,6 @@ const rules = reactive<FormRules>({
         {
             validator: (rule, value, callback) => {
                 if (value !== userCity.value) {
-                    console.log('userCity.value:', userCity.value)
-                    console.log('value:', value)
                     callback(new Error(`只能选择您所在的城市：${userCity.value}`))
                 } else {
                     callback()

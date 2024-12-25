@@ -1,5 +1,6 @@
 import type { TutorOrder } from './tutorOrder'
 import { ORDER_ITEM_OPTIONS } from '@/types/OrderOptions'
+import { CITY_DISTRICTS, type City } from '@/config/cityConfig'
 
 // 选择类型
 type SelectType = 'multiple' | 'none'
@@ -54,17 +55,17 @@ export const ALL_COLUMNS: TableColumn[] = [
       options: [...ORDER_ITEM_OPTIONS.gender_options]
     }
   },
-  { 
-    prop: 'teaching_type', 
-    label: '教学类型', 
-    width: 120,
-    visible: true,
-    comment: '一对一或一对多',
-    select: {
-      type: 'multiple',
-      options: [...ORDER_ITEM_OPTIONS.teaching_types]
-    }
-  },
+  // { 
+  //   prop: 'teaching_type', 
+  //   label: '教学类型', 
+  //   width: 120,
+  //   visible: true,
+  //   comment: '一对一或一对多',
+  //   select: {
+  //     type: 'multiple',
+  //     options: [...ORDER_ITEM_OPTIONS.teaching_types]
+  //   }
+  // },
   { 
     prop: 'student_grade', 
     label: '学生年级', 
@@ -145,8 +146,8 @@ export const ALL_COLUMNS: TableColumn[] = [
   
   { 
     prop: 'grade_score', 
-    label: '成绩情况', 
-    width: FOUR_CHAR_LABEL_WIDTH,
+    label: '现阶段成绩', 
+    width: 200,
     visible: true,
     comment: '学生当前成绩'
   },
@@ -163,10 +164,10 @@ export const ALL_COLUMNS: TableColumn[] = [
   },
   { 
     prop: 'tutoring_time', 
-    label: '辅导时间', 
+    label: '补习时间', 
     width: 150,
     visible: true,
-    comment: '期望的辅导时间'
+    comment: '期望的补习时间'
   },
   { 
     prop: 'salary', 
@@ -317,4 +318,43 @@ export const DEFAULT_TABLE_CONFIG: TableConfig = {
   pageSize: 20,
   border: true,
   stripe: true
-} 
+}
+
+// 获取默认表格配置
+export function getDefaultTableConfig(city: City): TableConfig {
+  return {
+    ...DEFAULT_TABLE_CONFIG,
+    columns: DEFAULT_COLUMNS.map(col => {
+      if (col.prop === 'district' && col.select) {
+        return {
+          ...col,
+          select: {
+            ...col.select,
+            options: [...CITY_DISTRICTS[city]]
+          }
+        }
+      }
+      return col
+    })
+  }
+}
+
+// 获取所有列配置
+export function getAllColumns(city: City): TableColumn[] {
+  return ALL_COLUMNS.map(col => {
+    if (col.prop === 'district' && col.select) {
+      return {
+        ...col,
+        select: {
+          ...col.select,
+          options: [...CITY_DISTRICTS[city]]
+        }
+      }
+    }
+    return col
+  })
+}
+
+// 检查这些常量是否正确导出和定义
+console.log('所有可用列:', ALL_COLUMNS)
+console.log('默认显示列:', DEFAULT_COLUMNS) 

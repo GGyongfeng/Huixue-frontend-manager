@@ -27,8 +27,13 @@
       display: none !important;
     }
 
-    .svg-icon {
-      display: block !important;
+    .menu {
+      .left {
+        .svg-icon {
+          display: block !important;
+          margin: 0 10px;
+        }
+      }
     }
   }
 }
@@ -42,7 +47,7 @@
     .menu {
       .left {
         .svg-icon {
-          padding: 0 10px 0 18px;
+          margin: 0 10px;
         }
       }
 

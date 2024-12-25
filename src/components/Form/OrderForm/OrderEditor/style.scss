@@ -104,3 +104,34 @@
     }
   }
 }
+
+.address-inputs {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+
+  .city-select {
+    width: 120px;  // 固定宽度
+  }
+
+  .district-select {
+    width: 120px;  // 固定宽度
+  }
+
+  .address-input {
+    flex: 1;  // 占据剩余空间
+  }
+}
+
+// 移动端适配
+@media screen and (max-width: 768px) {
+  .address-inputs {
+    flex-direction: column;
+    
+    .city-select,
+    .district-select,
+    .address-input {
+      width: 100%;
+    }
+  }
+}

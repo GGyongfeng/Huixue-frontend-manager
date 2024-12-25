@@ -6,11 +6,11 @@
     :style="{ background: theme.background }"
   >
     <div class="header" @click="toHome" :style="{ background: theme.background }">
-      <svg class="svg-icon" aria-hidden="true">
-        <use xlink:href="#icon-zhaopian-copy"></use>
-      </svg>
+        <svg class="svg-icon" aria-hidden="true">
+          <use xlink:href="#icon-zhaopian-copy"></use>
+        </svg>
       <p :style="{ color: theme.systemNameColor, opacity: collapse ? 0 : 1 }">
-        {{ SystemInfo.name }}
+        {{ cityConfig.systemName }}
       </p>
     </div>
     <!--  -->
@@ -43,10 +43,12 @@
   import Submenu from '../Submenu/submenu.vue'
   import { HOME_PAGE } from '@/router/index'
   import { useSettingStore } from '@/store/modules/setting'
-  import { SystemInfo } from '@/config/setting'
   import { MenuWidth } from '@/enums/appEnum'
   import { useMenuStore } from '@/store/modules/menu'
   import { MenuListType } from '@/types/menu'
+  import { useUserStore } from '@/store/modules/user'
+  import { getCityConfig, type City } from '@/config/cityConfig'
+  import { computed } from 'vue'
 
   const route = useRoute()
   const router = useRouter()
@@ -146,6 +148,17 @@
       showMobileModel.value = false
     }
   }
+
+  const userStore = useUserStore()
+
+  // 获取用户城市
+  const userCity = computed(() => {
+    const city = userStore.info?.userInfo?.city || '天津'
+    return city as City
+  })
+
+  // 获取当前城市的配置
+  const cityConfig = computed(() => getCityConfig(userCity.value))
 </script>
 
 <style lang="scss" scoped>

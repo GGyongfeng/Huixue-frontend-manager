@@ -7,7 +7,7 @@
       <!-- 多选列 -->
       <el-table-column v-if="multipleSelection" type="selection" width="55" fixed="left" />
 
-      <template v-for="col in visibleColumns" :key="col.prop">
+      <template v-for="col in config.columns" :key="col.prop">
         <el-table-column :prop="col.prop" :label="col.label" :width="col.width" :fixed="col.fixed">
           <!-- 自定义表头 -->
           <template #header>
@@ -87,26 +87,35 @@
       <el-pagination v-model:current-page="currentPage" :total="total" :page-size="config.pageSize"
         @current-change="handlePageChange" />
     </div>
+
+    <!-- 添加调试信息 -->
+    <div v-if="false" style="margin-bottom: 10px; color: #666;">
+      当前显示列: {{ config.columns.map(col => col.prop).join(', ') }}
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import type { TutorOrder } from '@/types/tutorOrder'
-import { DEFAULT_TABLE_CONFIG, ALL_COLUMNS, type TableConfig } from '@/types/tutorMenuList'
+import { getDefaultTableConfig, getAllColumns, type TableConfig } from '@/types/tutorMenuList'
 import { Delete, Edit, View, Hide, Select, CircleCheck, CopyDocument } from '@element-plus/icons-vue'
 import FilterTags from '../FilterTags/FilterTags.vue'
 import TableHeader from './TableHeader.vue'
 import { useTutorStore } from '@/store/modules/tutor'
 import { copyOrderAsText } from '@/utils/orderFormatter'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/modules/user'
+import type { City } from '@/config/cityConfig'
+import ColumnSelector from '../TableColumnSelector/ColumnSelector.vue'
+import { DEFAULT_COLUMNS, ALL_COLUMNS } from '@/types/tutorMenuList'
 
 // Props 定义
 const props = defineProps<{
   loading: boolean
   data: TutorOrder[]
   total: number
-  config?: TableConfig
+  config: TableConfig  // 必传
   multipleSelection?: boolean
 }>()
 
@@ -123,15 +132,17 @@ const emit = defineEmits<{
 
 const currentPage = ref(1)
 
-const config = computed(() => {
-  const finalConfig = props.config || DEFAULT_TABLE_CONFIG
-  return finalConfig
+const userStore = useUserStore()
+const userCity = computed(() => (userStore.info?.userInfo?.city || '天津') as City)
+
+// 确保 config 始终有值
+const config = computed((): TableConfig => {
+  return props.config || getDefaultTableConfig(userCity.value)
 })
 
 // 计算可见的列
 const visibleColumns = computed(() => {
-  const visible = config.value.columns.filter(col => col.visible)
-  return visible
+  return config.value.columns.filter(col => col.visible)
 })
 
 // 事件处理
@@ -159,11 +170,10 @@ const tutorStore = useTutorStore()
 
 // 在组件挂载时初始化筛选条件
 onMounted(() => {
-  // console.log('tutorTable - 初始化', {
-  //   显示列数: visibleColumns.value.length,
-  //   所有列数: ALL_COLUMNS.length
-  // })
-  tutorStore.initFilterSelections(ALL_COLUMNS)
+  console.log('tutorTable mounted, 初始化筛选条件')  // 添加日志
+  console.log('当前城市:', userCity.value)  // 添加日志
+  console.log('表格配置:', config.value)  // 添加日志
+  tutorStore.initFilterSelections(getAllColumns(userCity.value))
 })
 
 // 选中的
@@ -197,6 +207,22 @@ const handleCopy = async (row: TutorOrder) => {
     ElMessage.error('复制失败')
   }
 }
+
+const selectedColumns = ref(DEFAULT_COLUMNS.map(col => col.prop))
+
+// 监听选中列的变化
+watch(selectedColumns, (newColumns) => {
+  console.log('选中的列发生变化:', newColumns)
+}, { deep: true })
+
+// 监听配置变化
+watch(() => props.config, (newConfig) => {
+  console.log('tutorTable.vue - 表格配置更新:', {
+    配置: newConfig,
+    列数: newConfig.columns.length,
+    列: newConfig.columns.map(col => col.prop)
+  })
+}, { deep: true })
 </script>
 
 <style lang="scss" scoped>

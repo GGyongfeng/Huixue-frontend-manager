@@ -15,7 +15,22 @@ export function routerMatch(
   routesToAdd.forEach((route) => {
     const { name } = route
     if (name && !router.hasRoute(name)) {
-      router.addRoute(route as unknown as RouteRecordRaw)
+      const routeToAdd = {
+        ...route,
+        children: route.children || []
+      } as RouteRecordRaw
+      router.addRoute(routeToAdd)
+    }
+  })
+
+  // 注册所有 noMenu 为 true 的路由
+  roleRoutes.forEach(route => {
+    if (route.meta?.noMenu) {
+      const routeToAdd = {
+        ...route,
+        children: route.children || []
+      } as RouteRecordRaw
+      router.addRoute(routeToAdd)
     }
   })
 }

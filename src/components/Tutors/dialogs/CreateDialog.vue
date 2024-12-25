@@ -66,7 +66,7 @@ const rules = reactive<FormRules>({
     { required: true, message: '请输入详细地址', trigger: 'blur' }
   ],
   tutoring_time: [
-    { required: true, message: '请输入辅导时间', trigger: 'blur' }
+    { required: true, message: '请输入补习时间', trigger: 'blur' }
   ],
   salary: [
     { required: true, message: '请输入课时费', trigger: 'blur' }

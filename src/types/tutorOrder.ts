@@ -28,9 +28,9 @@ export interface TutorOrder {
   city: City                 // 城市
   district: District<City>    // 区域，根据城市动态变化
   address: string           // 详细地址
-  grade_score: string      // 成绩情况
+  grade_score: string      // 现阶段成绩
   student_level: StudentLevel  // 学生水平
-  tutoring_time: string     // 辅导时间
+  tutoring_time: string     // 补习时间
   salary: string           // 课时费
   requirement_desc: string // 具体要求
   subjects_desc: string   // 科目详细说明

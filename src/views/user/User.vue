@@ -6,7 +6,7 @@
           <img class="bg" src="@imgs/user/user-background.png" />
           <img class="avatar" src="@imgs/user/avatar.png" />
           <h2 class="name">{{ userInfo.username }}</h2>
-          <p class="des">汇学家教员工信息管理界面示例</p>
+          <p class="des">个人信息管理界面示例（未完善）</p>
           
           <div class="outer-info">
             <div>
@@ -143,13 +143,13 @@
   const isEditPwd = ref(false)
   const date = ref('')
   const form = reactive({
-    realName: '古永丰',
+    realName: 'GGBond',
     nikeName: null,
     email: 'yongfenggu@tju.edu.cn',
     mobile: '15369998659',
     address: '天津市卫津路92号',
     sex: '1',
-    des: '欢迎加入汇学家教大家庭'
+    des: '感谢您的使用'
   })
 
   const pwdForm = reactive({

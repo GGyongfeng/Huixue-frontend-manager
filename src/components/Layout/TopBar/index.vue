@@ -34,7 +34,7 @@
 
       <div class="right">
         <!-- 搜索 -->
-        <div class="search-wrap">
+        <!-- <div class="search-wrap">
           <div class="search-input" @click="openSearchDialog">
             <div class="left">
               <i class="iconfont-sys">&#xe710;</i>
@@ -46,7 +46,7 @@
               <span>k</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <!-- 全屏按钮 -->
         <div class="btn-box screen-box" @click="fullScreenFun" v-if="!isFullScreen">
           <div class="btn full-screen-btn">
@@ -59,12 +59,12 @@
           </div>
         </div>
         <!-- 通知 -->
-        <div class="btn-box notice-btn" @click="visibleNotice">
+        <!-- <div class="btn-box notice-btn" @click="visibleNotice">
           <div class="btn notice-button">
             <i class="iconfont-sys notice-btn">&#xe6c2;</i>
             <span class="count notice-btn"></span>
           </div>
-        </div>
+        </div> -->
         <!-- 语言 -->
         <div class="btn-box" v-if="showLanguage">
           <el-dropdown @command="changeLanguage">
@@ -237,11 +237,11 @@
   }
 
   const toDocs = () => {
-    window.open('https://www.lingchen.kim/art-design-pro/docs')
+    window.open('https://github.com/GGyongfeng/Huixue-frontend-manager')
   }
 
   const toGithub = () => {
-    window.open('https://github.com/GGyongfeng/HuiXueJiaoPei')
+    window.open('https://github.com/GGyongfeng/Huixue-backend-SQL')
   }
 
   const toHome = () => {
@@ -283,7 +283,7 @@
     // 隐藏设置引导
     if (showSettingGuide.value) {
       settingStore.hideSettingGuide()
-    }
+    } 
     // 打开设置引导
     // settingStore.openSettingGuide()
   }

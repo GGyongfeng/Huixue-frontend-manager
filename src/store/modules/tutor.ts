@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import type { TutorOrder } from '@/types/tutorOrder'
-import type { TableColumn } from '@/types/tutorMenuList'
+import type { TableColumn, TableConfig } from '@/types/tutorMenuList'
 import type { tutorQueryParams } from '@/types/tutorOrder'
 import type { FilterSelection, FilterState } from '@/types/Filter'
 import { filterStateToQuery } from '@/types/Filter'
+import { DEFAULT_TABLE_CONFIG } from '@/types/tutorMenuList'
 
 const FILTER_STORAGE_KEY = 'tutor_filter_selections'
 
@@ -39,7 +40,8 @@ export const useTutorStore = defineStore('tutor', {
       pageSize: 20,
       keyword: '',
       filters: {}
-    } as Partial<tutorQueryParams>
+    } as Partial<tutorQueryParams>,
+    tableConfig: { ...DEFAULT_TABLE_CONFIG } as TableConfig  // 添加表格配置状态
   }),
   
   actions: {
@@ -177,6 +179,11 @@ export const useTutorStore = defineStore('tutor', {
         keyword: '',
         filters: filterStateToQuery(this.filterSelections)
       }
+    },
+    
+    // 添加设置表格配置的 action
+    setTableConfig(config: TableConfig) {
+      this.tableConfig = config
     }
   }
 }) 

@@ -102,6 +102,11 @@ const handleOptionChange = (checked: CheckboxValueType, option: string) => {
 .el-dropdown-menu {
   padding: 8px;
   min-width: 150px;
+  max-height: 400px;
+  
+  :deep(.el-scrollbar__wrap) {
+    max-height: 300px;
+  }
 
   .el-dropdown-item {
     padding: 4px 8px;
@@ -110,5 +115,10 @@ const handleOptionChange = (checked: CheckboxValueType, option: string) => {
       background-color: transparent;
     }
   }
+}
+
+:deep(.el-dropdown__popper) {
+  max-height: 400px;
+  overflow-y: auto;
 }
 </style>
