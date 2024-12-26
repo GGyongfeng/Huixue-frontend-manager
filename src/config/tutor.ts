@@ -11,14 +11,6 @@ export const TEACHER_TYPES = [
   '无'
 ] as const
 
-// 学生水平选项
-export const STUDENT_LEVELS = [
-  '优秀',
-  '较好',
-  '中等',
-  '不及格'
-] as const
-
 
 // 订单表单默认值
 export const DEFAULT_ORDER_FORM = {

@@ -32,7 +32,7 @@ export interface TutorOrder {
   student_level: StudentLevel  // 学生水平
   tutoring_time: string     // 补习时间
   salary: string           // 课时费
-  requirement_desc: string // 具体要求
+  requirement_desc: string // 对老师要求
   subjects_desc: string   // 科目详细说明
   phone_number: string     // 联系电话
   order_source?: string    // 订单来源

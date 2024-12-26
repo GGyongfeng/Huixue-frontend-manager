@@ -33,17 +33,17 @@ export const ALL_COLUMNS: TableColumn[] = [
     visible: true,
     comment: '订单的唯一编号'
   },
-  { 
-    prop: 'order_tags', 
-    label: '订单标签', 
-    width: FOUR_CHAR_LABEL_WIDTH,
-    visible: true,
-    comment: '订单标签',
-    select: {
-      type: 'multiple',
-      options: [...ORDER_ITEM_OPTIONS.order_tags]
-    }
-  },
+  // { 
+  //   prop: 'order_tags', 
+  //   label: '订单标签', 
+  //   width: FOUR_CHAR_LABEL_WIDTH,
+  //   visible: true,
+  //   comment: '订单标签',
+  //   select: {
+  //     type: 'multiple',
+  //     options: [...ORDER_ITEM_OPTIONS.order_tags]
+  //   }
+  // },
   { 
     prop: 'student_gender', 
     label: '学生性别', 
@@ -152,17 +152,6 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '学生当前成绩'
   },
   { 
-    prop: 'student_level', 
-    label: '学生水平', 
-    width: FOUR_CHAR_LABEL_WIDTH,
-    visible: true,
-    comment: '学生整体水平',
-    select: {
-      type: 'multiple',
-      options: [...ORDER_ITEM_OPTIONS.student_levels]
-    }
-  },
-  { 
     prop: 'tutoring_time', 
     label: '补习时间', 
     width: 150,
@@ -178,10 +167,10 @@ export const ALL_COLUMNS: TableColumn[] = [
   },
   { 
     prop: 'requirement_desc', 
-    label: '具体要求', 
+    label: '对老师要求', 
     width: 200,
     visible: true,
-    comment: '具体要求'
+    comment: '对老师要求'
   },
   { 
     prop: 'phone_number', 
@@ -274,18 +263,18 @@ export const ALL_COLUMNS: TableColumn[] = [
   },
   { 
     prop: 'deal_staff_name', 
-    label: '成交员工', 
+    label: '成交人', 
     width: 100,
     visible: true,
     comment: '成交员工姓名'
   },
-  { 
-    prop: 'deal_teacher_name', 
-    label: '成交教师', 
-    width: 100,
-    visible: true,
-    comment: '成交教师姓名'
-  },
+  // { 
+  //   prop: 'deal_teacher_name', 
+  //   label: '成交教师', 
+  //   width: 100,
+  //   visible: true,
+  //   comment: '成交教师姓名'
+  // },
   { 
     prop: 'operation', 
     label: '操作', 

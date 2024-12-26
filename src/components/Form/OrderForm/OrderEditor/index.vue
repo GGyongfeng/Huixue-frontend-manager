@@ -11,7 +11,7 @@
                 <el-input v-model="orderForm.tutor_code" placeholder="请输入订单编号" />
             </el-form-item>
 
-            <el-form-item prop="order_tags">
+            <!-- <el-form-item prop="order_tags">
                 <template #label>
                     <span class="primary-label">订单标签</span>
                     <span class="label-colon">：</span>
@@ -20,7 +20,7 @@
                 <el-select v-model="orderForm.order_tags" multiple placeholder="请选择订单标签">
                     <el-option v-for="tag in ORDER_ITEM_OPTIONS.order_tags" :key="tag" :label="tag" :value="tag" />
                 </el-select>
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item prop="student_gender">
                 <template #label>

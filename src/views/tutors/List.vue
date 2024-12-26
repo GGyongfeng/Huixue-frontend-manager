@@ -195,19 +195,10 @@ const handleBatchStatus = async (rows: TutorOrder[]) => {
         // 根据用户选择决定目标状态
         let newStatus: '已成交' | '未成交'
         if (confirmResult === 'confirm') {
-            // 全部标记为成交
-            const { value: teacherId } = await ElMessageBox.prompt(
-                '请输入成交教师ID',
-                '批量标记成交',
-                {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                }
-            )
             
             const ids = rows.map(row => row.id!).filter(Boolean)
             await mutationApis.updateOrderDealStatus(ids, {
-                teacherId: teacherId ? parseInt(teacherId) : null,
+                teacherId: null,
                 status: '已成交'
             })
         } else if (confirmResult === 'cancel') {
@@ -366,17 +357,8 @@ const handleStatusChange = async (row: TutorOrder) => {
     const newStatus = row.status === '已成交' ? '未成交' : '已成交'
     
     if (newStatus === '已成交') {
-      const { value: teacherId } = await ElMessageBox.prompt(
-        '请输入成交教师ID',
-        '标记成交',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-        }
-      )
-      
       await mutationApis.updateOrderDealStatus(row.id!, {
-        teacherId: teacherId ? parseInt(teacherId) : null,
+        teacherId: null,
         status: newStatus
       })
     } else {
