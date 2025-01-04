@@ -223,7 +223,6 @@ import { useUserStore } from '@/store/modules/user'
 import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 const userStore = useUserStore()
-console.log('Current user info:', userStore.info)
 
 // 定义props和emits
 const props = defineProps<{

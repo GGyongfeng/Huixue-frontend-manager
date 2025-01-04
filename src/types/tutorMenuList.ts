@@ -44,17 +44,17 @@ export const ALL_COLUMNS: TableColumn[] = [
   //     options: [...ORDER_ITEM_OPTIONS.order_tags]
   //   }
   // },
-  { 
-    prop: 'student_gender', 
-    label: '学生性别', 
-    width: FOUR_CHAR_LABEL_WIDTH,
-    visible: true,
-    comment: '学生的性别',
-    select: {
-      type: 'multiple',
-      options: [...ORDER_ITEM_OPTIONS.gender_options]
-    }
-  },
+  // { 
+  //   prop: 'student_gender', 
+  //   label: '学生性别', 
+  //   width: FOUR_CHAR_LABEL_WIDTH,
+  //   visible: true,
+  //   comment: '学生的性别',
+  //   select: {
+  //     type: 'multiple',
+  //     options: [...ORDER_ITEM_OPTIONS.gender_options]
+  //   }
+  // },
   // { 
   //   prop: 'teaching_type', 
   //   label: '教学类型', 
@@ -89,35 +89,35 @@ export const ALL_COLUMNS: TableColumn[] = [
       options: [...ORDER_ITEM_OPTIONS.subjects]
     }
   },
-  { 
-    prop: 'subjects_desc', 
-    label: '科目详细说明', 
-    width: 200,
-    visible: true,
-    comment: '补习科目详细说明',
-  },
-  { 
-    prop: 'teacher_type', 
-    label: '教师类型', 
-    width: FOUR_CHAR_LABEL_WIDTH,
-    visible: true,
-    comment: '期望的教师类型',
-    select: {
-      type: 'multiple',
-      options: [...ORDER_ITEM_OPTIONS.teacher_types]
-    }
-  },
-  { 
-    prop: 'teacher_gender', 
-    label: '教师性别', 
-    width: FOUR_CHAR_LABEL_WIDTH,
-    visible: true,
-    comment: '期望的教师性别',
-    select: {
-      type: 'multiple',
-      options: ['男', '女', '无']
-    }
-  },
+  // { 
+  //   prop: 'subjects_desc', 
+  //   label: '科目详细说明', 
+  //   width: 200,
+  //   visible: true,
+  //   comment: '补习科目详细说明',
+  // },
+  // { 
+  //   prop: 'teacher_type', 
+  //   label: '教师类型', 
+  //   width: FOUR_CHAR_LABEL_WIDTH,
+  //   visible: true,
+  //   comment: '期望的教师类型',
+  //   select: {
+  //     type: 'multiple',
+  //     options: [...ORDER_ITEM_OPTIONS.teacher_types]
+  //   }
+  // },
+  // { 
+  //   prop: 'teacher_gender', 
+  //   label: '教师性别', 
+  //   width: FOUR_CHAR_LABEL_WIDTH,
+  //   visible: true,
+  //   comment: '期望的教师性别',
+  //   select: {
+  //     type: 'multiple',
+  //     options: ['男', '女', '无']
+  //   }
+  // },
   { 
     prop: 'district', 
     label: '区域', 
@@ -144,33 +144,40 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '详细地址'
   },
   
+  // { 
+  //   prop: 'grade_score', 
+  //   label: '现阶段成绩', 
+  //   width: 200,
+  //   visible: true,
+  //   comment: '学生当前成绩'
+  // },
+  // { 
+  //   prop: 'tutoring_time', 
+  //   label: '补习时间', 
+  //   width: 150,
+  //   visible: true,
+  //   comment: '期望的补习时间'
+  // },
+  // { 
+  //   prop: 'salary', 
+  //   label: '课时费', 
+  //   width: FOUR_CHAR_LABEL_WIDTH,
+  //   visible: true,
+  //   comment: '每小时费用'
+  // },
+  // { 
+  //   prop: 'requirement_desc', 
+  //   label: '对老师要求', 
+  //   width: 200,
+  //   visible: false,
+  //   comment: '对老师要求'
+  // },  
   { 
-    prop: 'grade_score', 
-    label: '现阶段成绩', 
+    prop: 'original_text', 
+    label: '订单内容', 
     width: 200,
     visible: true,
-    comment: '学生当前成绩'
-  },
-  { 
-    prop: 'tutoring_time', 
-    label: '补习时间', 
-    width: 150,
-    visible: true,
-    comment: '期望的补习时间'
-  },
-  { 
-    prop: 'salary', 
-    label: '课时费', 
-    width: FOUR_CHAR_LABEL_WIDTH,
-    visible: true,
-    comment: '每小时费用'
-  },
-  { 
-    prop: 'requirement_desc', 
-    label: '对老师要求', 
-    width: 200,
-    visible: true,
-    comment: '对老师要求'
+    comment: '订单内容'
   },
   { 
     prop: 'phone_number', 

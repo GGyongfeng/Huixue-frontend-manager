@@ -81,13 +81,24 @@ function extractContent(line: string, key: string): string {
 
 export function parseOrderText(text: string, userCity: City): Partial<TutorOrder> {
     // 创建基础订单对象
-    const order = getDefaultOrderSelection(userCity)
-    
-    // 确保城市设置正确
-    order.city = userCity
+    const defaultOrder = getDefaultOrderSelection(userCity)
+    const order: Partial<TutorOrder> = {
+        ...defaultOrder,
+        city: userCity,
+        original_text: ''  // 显式初始化 original_text
+    }
     
     // 按行分割文本
     const lines = text.split('\n')
+    
+    // 过滤掉包含"号家教"的行，并清理末尾标点
+    order.original_text = lines
+        .filter(line => !line.includes('号家教'))
+        .filter(line => line.trim())  // 过滤空行
+        .join('\n')
+        .replace(/[，,。.、""：:；;!！?？]+$/, '')  // 清理末尾标点
+        .replace(/^"|"$/g, '')  // 清理首尾引号
+        .trim()  // 去掉首尾空白
     
     // 提取订单编号（第一行中的数字）
     const codeMatch = lines[0].match(/(\d+)/)
@@ -255,39 +266,38 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
 
 /**
  * 解析可能包含多个订单的文本
- * @param text 输入文本
- * @param userCity 用户城市
- * @returns 解析后的订单数组
  */
 export function parseMultipleOrders(text: string, userCity: City): Partial<TutorOrder>[] {
-  // 如果文本中不包含"号家教"，则视为单个订单
-  if (!text.includes('号家教')) {
-    return [parseOrderText(text, userCity)]
-  }
-
-  // 使用正则表达式匹配完整的订单号模式
-  const orderTexts = text.split(/(?=\d{6}号家教)/).filter(t => {
-    const trimmed = t.trim()
-    // 确保分割后的文本包含完整的订单号模式
-    return trimmed && /^\d{6}号家教/.test(trimmed)
-  })
-
-  // 如果只有一个订单，接返回
-  if (orderTexts.length === 1) {
-    return [parseOrderText(text, userCity)]
-  }
-
-  // 解析每个订单文本
-  return orderTexts.map(orderText => {
-    try {
-      return parseOrderText(orderText.trim(), userCity)
-    } catch (error: unknown) {
-      console.error('解析订单失败:', error)
-      // 返回一个带有错误信息的部分订单对象
-      return {
-        tutor_code: orderText.match(/(\d{6})号家教/)?.[1] || '',
-        requirement_desc: `解析失败: ${error instanceof Error ? error.message : String(error)}`
-      }
+    // 如果文本中不包含"号家教"，则视为单个订单
+    if (!text.includes('号家教')) {
+        return [parseOrderText(text, userCity)]
     }
-  }).filter(order => order.tutor_code) // 过滤掉没有订单号的无效单
+
+    // 使用正则表达式匹配完整的订单号模式，并清理每个订单文本的引号
+    const orderTexts = text
+        .replace(/^"|"$/g, '')  // 先清理整个文本的首尾引号
+        .split(/(?=\d{6}号家教)/)
+        .filter(t => {
+            const trimmed = t.trim()
+            return trimmed && /^\d{6}号家教/.test(trimmed)
+        })
+        .map(t => t.replace(/^"|"$/g, '').trim())  // 清理每个订单文本的引号
+
+    // 如果只有一个订单，直接返回
+    if (orderTexts.length === 1) {
+        return [parseOrderText(text.replace(/^"|"$/g, ''), userCity)]
+    }
+
+    // 解析每个订单文本
+    return orderTexts.map(orderText => {
+        try {
+            return parseOrderText(orderText, userCity)
+        } catch (error: unknown) {
+            console.error('解析订单失败:', error)
+            return {
+                tutor_code: orderText.match(/(\d{6})号家教/)?.[1] || '',
+                requirement_desc: `解析失败: ${error instanceof Error ? error.message : String(error)}`
+            }
+        }
+    }).filter(order => order.tutor_code)
 } 

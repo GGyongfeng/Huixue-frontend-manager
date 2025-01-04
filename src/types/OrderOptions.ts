@@ -84,7 +84,7 @@ export const getDefaultOrderSelection = (userCity: City = '天津') => ({
   tutor_code: '',
   student_gender: '男' as Gender,
   teaching_type: '一对一' as TeachingType,
-  student_grade: '幼儿' as StudentGrade,
+  student_grade: '' as StudentGrade,
   subjects: [] as Subject[],
   teacher_type: [] as TeacherType[],
   teacher_gender: [] as Gender[],

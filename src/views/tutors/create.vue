@@ -38,11 +38,12 @@
     <OrderEditCard v-model="orderForm" ref="orderEditCardRef">
       <template #form-actions>
         <el-form-item class="form-actions">
-          <el-button @click="resetForm">重置</el-button>
-          <el-button @click="showBatchUpload">一键上传</el-button>
-          <el-button type="primary" @click="submitForm" :loading="loading">
-            提交
-          </el-button>
+          <div class="button-group">
+            <el-button @click="resetForm">重置</el-button>
+            <el-button @click="showBatchUpload">一键上传</el-button>
+            <el-button @click="submitAllDrafts" :loading="submitAllLoading">提交所有草稿</el-button>
+            <el-button type="primary" @click="submitForm" :loading="loading">提交</el-button>
+          </div>
         </el-form-item>
       </template>
     </OrderEditCard>
@@ -53,9 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed, onMounted } from 'vue'
+import { ref, reactive, watch, computed, onMounted, nextTick } from 'vue'
 import { useWindowSize } from '@vueuse/core'
-import OrderEditCard from '@/components/Form/OrderForm/OrderEditor/index.vue'
+import OrderEditCard from '@/components/Form/OrderForm/OrderEditor2/index.vue'
 import type { TutorOrder } from '@/types/tutorOrder'
 import { useUserStore } from '@/store/modules/user'
 import { mutationApis } from '@/api/tutors/mutation'
@@ -151,11 +152,14 @@ const loadDrafts = () => {
 
 // 创建新草稿时自选中并保存
 const createNewDraft = () => {
+  // 获取完全空白的默认表单
+  const emptyForm = getDefaultOrderSelection(userCity.value)
+  
   const newDraft: DraftItem = {
     id: Date.now().toString(),
     createTime: Date.now(),
     expireTime: Date.now() + ONE_DAY,
-    data: { ...getDefaultOrderSelection(userCity.value) }
+    data: { ...emptyForm }  // 使用空白表单
   }
   draftList.value.push(newDraft)
   saveDraftList()
@@ -167,7 +171,8 @@ const switchDraft = (draftId: string) => {
   currentDraftId.value = draftId
   const draft = draftList.value.find(d => d.id === draftId)
   if (draft) {
-    Object.assign(orderForm.value, draft.data)
+    // 完全替换表单数据
+    orderForm.value = { ...getDefaultOrderSelection(userCity.value), ...draft.data }
     localStorage.setItem(CURRENT_DRAFT_KEY, draftId)
   }
 }
@@ -239,7 +244,21 @@ const submitForm = async () => {
     const res = await mutationApis.addTutor(orderForm.value)
 
     if (res.code === 200) {
-      clearDraft()
+      // 只删除当前草稿
+      const index = draftList.value.findIndex(d => d.id === currentDraftId.value)
+      if (index > -1) {
+        draftList.value.splice(index, 1)
+        saveDraftList()
+      }
+      
+      // 如果还有其他草稿，切换到第一个
+      if (draftList.value.length > 0) {
+        switchDraft(draftList.value[0].id)
+      } else {
+        // 如果没有其他草稿了，创建新草稿
+        createNewDraft()
+      }
+      
       ElMessage.success('创建成功')
     } else {
       ElMessage.error(res.message || '创建失败')
@@ -253,7 +272,11 @@ const submitForm = async () => {
 }
 
 const resetForm = () => {
+  // 先重置表单
   orderEditCardRef.value?.resetFields()
+  // 重新设置为完全空白的表单
+  orderForm.value = getDefaultOrderSelection(userCity.value)
+  // 清除草稿
   clearDraft()
 }
 
@@ -343,6 +366,178 @@ const confirmClearAll = () => {
   }).catch(() => {
     // 取消时不做任何操作
   })
+}
+
+// 添加新的 ref
+const submitAllLoading = ref(false)
+
+// 添加验证单个草稿的方法
+const validateDraft = async (draft: DraftItem): Promise<boolean> => {
+  // 切换到要验证的草稿
+  switchDraft(draft.id)
+  // 等待 DOM 更新
+  await nextTick()
+  
+  try {
+    const valid = await orderEditCardRef.value?.validate()
+    return valid || false
+  } catch (error) {
+    return false
+  }
+}
+
+// 修改提交所有草稿的方法
+const submitAllDrafts = async () => {
+  if (draftList.value.length === 0) {
+    ElMessage.warning('没有可提交的草稿')
+    return
+  }
+
+  try {
+    const confirmResult = await ElMessageBox.confirm(
+      `确定要提交所有草稿吗？共 ${draftList.value.length} 个草稿`,
+      '提交确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).catch(() => false)
+
+    if (!confirmResult) return
+
+    submitAllLoading.value = true
+    const initialDraftCount = draftList.value.length
+    
+    // 用于统计各种状态
+    const stats = {
+      formatInvalid: 0,  // 格式验证未通过数量
+      submitted: 0,      // 提交数量
+      success: 0,        // 成功数量
+      duplicated: 0,     // 订单号重复数量
+      otherFailed: 0     // 其他失败数量
+    }
+
+    // 先进行本地格式验证
+    const validDrafts: DraftItem[] = []
+    const invalidDrafts: DraftItem[] = []
+
+    for (const draft of [...draftList.value]) {
+      const isValid = await validateDraft(draft)
+      if (isValid) {
+        validDrafts.push(draft)
+      } else {
+        invalidDrafts.push(draft)
+        stats.formatInvalid++
+      }
+    }
+
+    // 如果有格式验证未通过的草稿，提示用户
+    if (invalidDrafts.length > 0) {
+      ElMessage.warning(`${invalidDrafts.length} 个草稿未通过格式验证，将被保留`)
+    }
+
+    // 提交验证通过的草稿
+    stats.submitted = validDrafts.length
+    for (const draft of validDrafts) {
+      try {
+        const res = await mutationApis.addTutor(draft.data)
+        if (res.code === 200) {
+          stats.success++
+          // 从草稿列表中移除
+          const index = draftList.value.findIndex(d => d.id === draft.id)
+          if (index > -1) {
+            draftList.value.splice(index, 1)
+            saveDraftList()
+          }
+        } else {
+          // 处理不同类型的失败
+          if (res.message?.includes('订单编号已存在')) {
+            stats.duplicated++
+          } else {
+            stats.otherFailed++
+          }
+          // 保留失败的草稿
+          ElMessage.error(`草稿 ${draft.data.tutor_code || '未命名'} 提交失败: ${res.message}`)
+        }
+      } catch (error) {
+        stats.otherFailed++
+        console.error('提交草稿失败:', error)
+        ElMessage.error(`草稿 ${draft.data.tutor_code || '未命名'} 提交失败`)
+      }
+    }
+
+    // 只要有成功提交的订单就跳转到结果页面
+    if (stats.success > 0) {
+      const currentTime = new Date().toLocaleString()
+      const currentUser = userStore.info?.userInfo
+
+      // 构建详细的结果信息
+      const resultDetails = [
+        `草稿总数：${initialDraftCount} 个`,
+        `成功上传：${stats.success} 个`
+      ]
+
+      // 上传失败的草稿
+      if (stats.otherFailed > 0) {
+        resultDetails.push(`上传失败：${stats.otherFailed} 个`)
+        resultDetails.push(`--原因：订单号已存在`)
+      }
+      
+      // 格式验证未通过的草稿
+      if (stats.formatInvalid > 0) {
+        const invalidCodes = invalidDrafts
+          .map(d => d.data.tutor_code || '未命名')
+          .join('、')
+        resultDetails.push(`格式验证未通过：${stats.formatInvalid} 个`)
+        resultDetails.push(`--具体订单号：${invalidCodes}`)
+      }
+
+      // 订单号重复的草稿
+      const duplicatedDrafts = validDrafts.filter(d => 
+        d.data.tutor_code && !draftList.value.find(vd => vd.id === d.id)
+      )
+      if (stats.duplicated > 0) {
+        const duplicatedCodes = duplicatedDrafts
+          .map(d => d.data.tutor_code)
+          .join('、')
+        resultDetails.push(`订单号重复：${stats.duplicated} 个`)
+        resultDetails.push(`具体订单号：${duplicatedCodes}`)
+      }
+
+
+      router.push({
+        path: '/result/success',
+        query: {
+          title: '批量上传完成',
+          subTitle: [
+            `成功上传数量：${stats.success}个订单`,
+            `上传时间：${currentTime}`,
+            `上传人员：${currentUser?.realname || currentUser?.username}`,
+          ].join('\n'),
+          extraInfo: resultDetails.join('\n'),
+          backPath: '/tutors/list'
+        }
+      })
+      return
+    }
+
+    // 如果一个都没有成功，显示简单的错误信息
+    ElMessage.error('没有订单上传成功')
+
+    // 如果还有草稿，切换到第一个，否则创建新草稿
+    if (draftList.value.length > 0) {
+      switchDraft(draftList.value[0].id)
+    } else {
+      createNewDraft()
+    }
+
+  } catch (error) {
+    console.error('批量提交失败:', error)
+    ElMessage.error('批量提交失败，请稍后重试')
+  } finally {
+    submitAllLoading.value = false
+  }
 }
 </script>
 
@@ -491,6 +686,43 @@ const confirmClearAll = () => {
 @media screen and (max-width: vars.$device-phone) {
   .page-content {
     padding: 0px;
+  }
+}
+
+.form-actions {
+  :deep(.el-form-item__content) {
+    display: flex;
+    justify-content: flex-end;
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      padding: 24px 0;
+      flex-wrap: wrap;  // 允许换行
+      
+      @media screen and (max-width: $device-phone) {
+        width: 100%;
+        gap: 8px;  // 减小间距
+        padding: 16px 0;
+        flex-direction: column;  // 改为垂直排列
+        
+        .el-button {
+          width: 100%;  // 占满整行
+          margin: 0;
+          padding: 8px 12px;  // 调整内边距
+          
+          // 处理按钮文字
+          :deep(.el-button__content) {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
   }
 }
 </style>

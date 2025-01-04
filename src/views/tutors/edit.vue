@@ -44,7 +44,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import OrderEditCard from '@/components/Form/OrderForm/OrderEditor/index.vue'
+import OrderEditCard from '@/components/Form/OrderForm/OrderEditor2/index.vue'
 import type { TutorOrder } from '@/types/tutorOrder'
 import type { Subject } from '@/types/OrderOptions'
 import { useTutorStore } from '@/store/modules/tutor'

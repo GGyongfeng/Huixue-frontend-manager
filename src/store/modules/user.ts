@@ -33,7 +33,7 @@ const defaultUserInfo: UserInfo = {
     city: '天津',
     is_deleted: null,
     avatar_url: null,
-    real_name: null,
+    realname: null,
     nick_name: null,
     email: null,
     mobile: null,

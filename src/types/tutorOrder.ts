@@ -54,6 +54,7 @@ export interface TutorOrder {
   deleted_by_name?: string    // 删除人姓名
   deal_teacher_name?: string  // 成交教师姓名
   deal_staff_name?: string    // 成交员工姓名
+  original_text?: string      // 原始文本
 }
 
 /**

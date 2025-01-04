@@ -99,8 +99,8 @@ const handleSubmit = async () => {
     const res = await updateNotification(formData)
 
     if (res.code === 200) {
-      const currentUser = userStore.info
       const currentTime = formatDate(new Date())
+      const currentUser = userStore.info?.userInfo
 
       router.push({
         path: '/result/success',
@@ -109,7 +109,7 @@ const handleSubmit = async () => {
           subTitle: [
             `通知标题：${formData.title}`,
             `更新时间：${currentTime}`,
-            `更新人员：${currentUser.name || currentUser.username}`,
+            `更新人员：${currentUser?.realname}`,
             `通知内容：${formData.description}`
           ].join('\n'),
           extraInfo: '通知更新成功，请返回列表查看',

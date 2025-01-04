@@ -9,7 +9,7 @@ export interface UserDetailInfo {
     city: string
     is_deleted: boolean | null
     avatar_url: string | null
-    real_name: string | null
+    realname: string | null
     nick_name: string | null
     email: string | null
     mobile: string | null

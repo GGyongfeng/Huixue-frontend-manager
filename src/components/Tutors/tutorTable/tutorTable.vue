@@ -74,6 +74,11 @@
             <template v-else-if="col.formatter">
               {{ col.formatter(scope.row) }}
             </template>
+            <template v-else-if="col.prop === 'original_text'">
+              <div class="content-cell" @click="showContentDialog(scope.row.original_text)">
+                {{ scope.row.original_text }}
+              </div>
+            </template>
             <template v-else>
               {{ scope.row[col.prop] }}
             </template>
@@ -92,6 +97,18 @@
     <div v-if="false" style="margin-bottom: 10px; color: #666;">
       当前显示列: {{ config.columns.map(col => col.prop).join(', ') }}
     </div>
+
+    <!-- 在组件最后添加弹出框 -->
+    <el-dialog
+      v-model="contentDialogVisible"
+      title="订单内容"
+      width="50%"
+      :close-on-click-modal="true"
+    >
+      <div class="content-dialog-body">
+        {{ currentContent }}
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -197,10 +214,11 @@ const handleBatchStatus = (rows: TutorOrder[]) => {
   emit('batch-status', rows)
 }
 
-// 添加复制处理函数
+// 修改复制处理函数
 const handleCopy = async (row: TutorOrder) => {
   try {
-    await copyOrderAsText(row.id!)
+    const text = copyOrderAsText(row)
+    await navigator.clipboard.writeText(text)
     ElMessage.success('复制成功')
   } catch (error) {
     console.error('复制失败:', error)
@@ -223,6 +241,16 @@ watch(() => props.config, (newConfig) => {
     列: newConfig.columns.map(col => col.prop)
   })
 }, { deep: true })
+
+// 添加状态变量
+const contentDialogVisible = ref(false)
+const currentContent = ref('')
+
+// 添加显示内容的处理函数
+const showContentDialog = (content: string) => {
+  currentContent.value = content
+  contentDialogVisible.value = true
+}
 </script>
 
 <style lang="scss" scoped>
@@ -268,6 +296,46 @@ watch(() => props.config, (newConfig) => {
       align-items: center;
       gap: 4px;
     }
+  }
+
+  :deep(.content-cell) {
+    max-height: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-line-clamp: 4;
+    -moz-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    white-space: pre-wrap;
+    word-break: break-all;
+    cursor: pointer;
+    
+    /* 备用方案，当 line-clamp 不支持时使用 */
+    @supports not (line-clamp: 4) {
+      max-height: 5.6em;
+      line-height: 1.4;
+    }
+    
+    &:hover {
+      color: var(--el-color-primary);
+    }
+  }
+
+  .content-dialog-body {
+    max-height: 60vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 16px;
+    background-color: var(--el-bg-color-page);
+    border-radius: 4px;
   }
 }
 </style>

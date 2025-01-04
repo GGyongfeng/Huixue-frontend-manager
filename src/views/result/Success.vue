@@ -10,7 +10,7 @@
 
     <!-- 额外信息区域 -->
     <div v-if="extraInfo" class="res">
-      <p>{{ extraInfo }}</p>
+      <p style="white-space: pre-wrap;">{{ extraInfo }}</p>
     </div>
 
     <!-- 按钮组 -->
@@ -131,6 +131,8 @@ const handlePrint = () => {
       padding: 8px 0;
       font-size: 15px;
       color: #808695;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
   }
 
