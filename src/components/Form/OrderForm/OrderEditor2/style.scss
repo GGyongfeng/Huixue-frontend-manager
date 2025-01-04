@@ -60,10 +60,11 @@
           
           .primary-label {
             width: auto;
-            text-align: left;
-            text-align-last: left;
+            text-align: justify;
+            text-align-last: justify;
             justify-content: flex-start;
             margin-right: 4px;
+            line-height: 32px;
           }
 
           .label-colon,
@@ -99,15 +100,13 @@
 
     // 自定义label样式
     .primary-label {
-      display: inline-flex !important;
-      align-items: center;
-      width: 70px;
+      display: inline-block !important;
+      width: 65px;
       font-weight: 600;
       text-align: justify;
       text-align-last: justify;
       height: 32px;
       line-height: 32px;
-      vertical-align: middle;
     }
 
     .label-colon {
