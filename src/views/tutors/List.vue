@@ -222,12 +222,14 @@ const handleBatchStatus = async (rows: TutorOrder[]) => {
 
 // 获取订单列表
 const fetchTutorList = async (params?: Partial<tutorQueryParams>) => {
+  // 避免重复请求
+  if (loading.value) return
+
   try {
     loading.value = true
-    console.log('开始获取订单列表，参数:', params)  // 添加日志
+    console.log('开始获取订单列表，参数:', params)
     
     const res = await TutorsService.getTutorList(params || queryParams.value)
-    console.log('获取订单列表响应:', res)  // 添加日志
     
     if (res.code === 200) {
       tutorList.value = res.data.list
@@ -260,42 +262,51 @@ const handlePageChange = (page: number) => {
     fetchTutorList(params)
 }
 
-// 添加路由守卫
+// 添加一个标记，用于避免重复请求
+const isFirstLoad = ref(true)
+
+// 修改路由守卫
 router.beforeEach((to, from, next) => {
   if (to.name === 'tutorList' && from.name !== 'tutorList') {
-    console.log('进入家教列表页面，刷新数据')
-    // 使用 nextTick 确保组件已经挂载
-    nextTick(() => {
-      fetchTutorList(tutorStore.searchParams)
-    })
+    console.log('进入家教列表页面')
+    // 如果不是首次加载，才刷新数据
+    if (!isFirstLoad.value) {
+      nextTick(() => {
+        fetchTutorList(tutorStore.searchParams)
+      })
+    }
   }
   next()
 })
 
-// 添加 activated 钩子
-onActivated(async () => {
-    await fetchTutorList(tutorStore.searchParams)
+// 修改 activated 钩子
+onActivated(() => {
+  // 如果不是首次加载且路由名称是 tutorList，才刷新数据
+  if (!isFirstLoad.value && router.currentRoute.value.name === 'tutorList') {
+    fetchTutorList(tutorStore.searchParams)
+  }
 })
 
-// 初始化
+// 修改 onMounted 钩子
 onMounted(async () => {
-  console.log('List组件mounted')  // 添加日志
-  try {
-    // 1. 初始化表格配置
-    initTableConfig()
-    console.log('表格配置初始化完成')  // 添加日志
-    
-    // 2. 初始化搜索参数
-    tutorStore.initSearchParams()
-    console.log('搜索参数初始化完成')  // 添加日志
-    
-    // 3. 获取列表数据
-    await fetchTutorList(tutorStore.searchParams)
-    console.log('初始数据加载完成')  // 添加日志
-  } catch (error) {
-    console.error('初始化失败:', error)
-    ElMessage.error('初始化失败')
-    loading.value = false
+  if (isFirstLoad.value) {
+    try {
+      // 1. 初始化表格配置
+      initTableConfig()
+      
+      // 2. 初始化搜索参数
+      tutorStore.initSearchParams()
+      
+      // 3. 获取列表数据
+      await fetchTutorList(tutorStore.searchParams)
+      
+      // 标记首次加载完成
+      isFirstLoad.value = false
+    } catch (error) {
+      console.error('初始化失败:', error)
+      ElMessage.error('初始化失败')
+      loading.value = false
+    }
   }
 })
 
@@ -428,6 +439,18 @@ const initTableConfig = () => {
     tutorStore.setTableConfig(getDefaultTableConfig(userCity.value))
   }
 }
+
+// 移除路由守卫，改用 watch
+watch(
+  () => router.currentRoute.value.name,
+  (newRouteName) => {
+    if (newRouteName === 'tutorList' && !isFirstLoad.value) {
+      nextTick(() => {
+        fetchTutorList(tutorStore.searchParams)
+      })
+    }
+  }
+)
 </script>
 
 <style lang="scss" scoped>

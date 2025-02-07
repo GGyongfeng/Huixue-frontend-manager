@@ -60,7 +60,7 @@ import OrderEditCard from '@/components/Form/OrderForm/OrderEditor2/index.vue'
 import type { TutorOrder } from '@/types/tutorOrder'
 import { useUserStore } from '@/store/modules/user'
 import { mutationApis } from '@/api/tutors/mutation'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { getDefaultOrderSelection, type City } from '@/types/OrderOptions'
 import { Close, Plus } from '@element-plus/icons-vue'
@@ -393,6 +393,13 @@ const submitAllDrafts = async () => {
     return
   }
 
+  // 添加加载提示
+  const loadingInstance = ElLoading.service({
+    text: '正在提交草稿，请稍候...',
+    spinner: 'el-icon-loading',
+    background: 'rgba(255, 255, 255, 0.7)',
+  })
+
   try {
     const confirmResult = await ElMessageBox.confirm(
       `确定要提交所有草稿吗？共 ${draftList.value.length} 个草稿`,
@@ -505,7 +512,6 @@ const submitAllDrafts = async () => {
         resultDetails.push(`具体订单号：${duplicatedCodes}`)
       }
 
-
       router.push({
         path: '/result/success',
         query: {
@@ -537,6 +543,7 @@ const submitAllDrafts = async () => {
     ElMessage.error('批量提交失败，请稍后重试')
   } finally {
     submitAllLoading.value = false
+    loadingInstance.close()  // 关闭加载提示
   }
 }
 </script>

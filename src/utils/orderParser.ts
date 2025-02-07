@@ -3,15 +3,24 @@ import { getDefaultOrderSelection, ORDER_ITEM_OPTIONS, type Subject, type Studen
 
 // 年级映射表
 const GRADE_MAPPING: Record<string, StudentGrade> = {
-    '七年级': '初一',
-    '八年级': '初二',
-    '九年级': '初三',
     '一年级': '小学',
     '二年级': '小学',
     '三年级': '小学',
     '四年级': '小学',
-    '五年级': '小学',
-    '六年级': '小学',
+    '五': '小学',
+    '六': '小学',
+    '1年级': '小学',
+    '2年级': '小学',
+    '3年级': '小学',
+    '4年级': '小学',
+    '5': '小学',
+    '6': '小学',
+    '7': '初一',
+    '8': '初二',
+    '9': '初三',
+    '七': '初一',
+    '八': '初二',
+    '九': '初三',
 }
 
 // 科目映射表
@@ -58,6 +67,12 @@ const SUBJECT_MAPPING: Record<string, Subject[]> = {
     '单词': ['英语'],
     '作业': ['数学', '语文', '英语'],
     '识字': ['语文'],
+    'fce': ['国际课程'],
+    'ket': ['国际课程'],
+    'pet': ['国际课程'],
+    '托福': ['国际课程'],
+    '雅思': ['国际课程'],
+    '剑桥英语': ['国际课程'],
 }
 
 // 在文件开头添加城市区域映射表，使用更具体的类型
@@ -69,6 +84,32 @@ const DISTRICT_MAPPING: Record<City, readonly string[]> = {
     '南京': ORDER_ITEM_OPTIONS.districts['南京'],
     '武汉': ORDER_ITEM_OPTIONS.districts['武汉'],
 }
+
+// 添加一个类型来表示所有城市的区域
+type AllDistricts = typeof ORDER_ITEM_OPTIONS.districts[City][number]
+
+// 修改区域映射表的类型定义
+const AREA_TO_DISTRICT_MAPPING: Record<City, Record<string, AllDistricts>> = {
+    '南京': {
+        '雨花': '雨花台区' as AllDistricts,
+    },
+    '上海': {
+        '浦东': '浦东新区' as AllDistricts,
+    },
+    '西安': {
+        '浐灞': '灞桥区' as AllDistricts,
+        '高新': '雁塔区' as AllDistricts,
+        '曲江': '雁塔区' as AllDistricts,
+    },
+    '天津': {
+        '开发区': '滨海新区',
+        '生态城': '滨海新区',
+        '塘沽区': '滨海新区',
+        '塘沽': '滨海新区',
+    },
+    '北京': {},  // 北京暂无特殊映射
+    '武汉': {},  // 武汉暂无特殊映射
+} as const
 
 // 添加一个通用的内容提取函数
 function extractContent(line: string, key: string): string {
@@ -85,7 +126,7 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
     const order: Partial<TutorOrder> = {
         ...defaultOrder,
         city: userCity,
-        original_text: ''  // 显式初始化 original_text
+        original_text: ''
     }
     
     // 按行分割文本
@@ -100,8 +141,8 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
         .replace(/^"|"$/g, '')  // 清理首尾引号
         .trim()  // 去掉首尾空白
     
-    // 提取订单编号（第一行中的数字）
-    const codeMatch = lines[0].match(/(\d+)/)
+    // 提取订单编号（支持多种格式）
+    const codeMatch = lines[0].match(/([A-Za-z0-9]+)(?=号家教)/) || lines[0].match(/([A-Za-z0-9]+)/)
     if (codeMatch) {
         order.tutor_code = codeMatch[1]
     }
@@ -128,6 +169,10 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
                         break
                     }
                 }
+            }
+            // 如果没有匹配到年级，则设置为"其他"
+            if (!order.student_grade) {
+                order.student_grade = '其他'
             }
         }
         
@@ -157,10 +202,10 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
             order.subjects = Array.from(subjects)
         }
         
-        // 现阶段成绩
-        if (line.includes('【现阶段成绩】')) {
-            order.grade_score = extractContent(line, '现阶段成绩')
-        }
+        // // 现阶段成绩
+        // if (line.includes('【现阶段成绩】')) {
+        //     order.grade_score = extractContent(line, '现阶段成绩')
+        // }
         
         // 补习时间
         if (line.includes('【补习时间】') || line.includes('时间')) {
@@ -179,7 +224,6 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
             if (addressMatch) {
                 // 保存地址
                 order.address = addressMatch
-                console.log('提取到的地址文本:', addressMatch)
                 
                 // 先检查是否是线上
                 if (addressMatch.toLowerCase().includes('线上') || 
@@ -194,22 +238,41 @@ export function parseOrderText(text: string, userCity: City): Partial<TutorOrder
                 const userCityDistricts = DISTRICT_MAPPING[userCity]
                 let foundDistrict = false
                 
-                // 遍历区域列表，检查每个区名是否出现在地址中
+                // 1. 先尝试直接匹配完整区域名
                 for (const district of userCityDistricts) {
-                    // 去掉"区"字后的区域名
-                    const districtName = district.replace('区', '')
-                    // 如果地址中包含区域名（不带"区"字），则认为匹配成功
-                    if (addressMatch.includes(districtName)) {
-                        console.log(`找到匹配区域: ${district}`)
+                    if (addressMatch.includes(district)) {
                         order.district = district as any
                         foundDistrict = true
                         break
                     }
                 }
                 
-                // 如果没有找到匹配的区域，设为其他
+                // 2. 如果没找到，尝试匹配去掉"区"字后的区域名
                 if (!foundDistrict) {
-                    console.log('未找到匹配的区域，设置为其他')
+                    for (const district of userCityDistricts) {
+                        const districtName = district.replace('区', '')
+                        if (addressMatch.includes(districtName)) {
+                            order.district = district as any
+                            foundDistrict = true
+                            break
+                        }
+                    }
+                }
+                
+                // 3. 如果还没找到，尝试使用特殊映射表
+                if (!foundDistrict) {
+                    const cityMapping = AREA_TO_DISTRICT_MAPPING[userCity]
+                    for (const [key, value] of Object.entries(cityMapping)) {
+                        if (addressMatch.includes(key)) {
+                            order.district = value as any
+                            foundDistrict = true
+                            break
+                        }
+                    }
+                }
+                
+                // 如果仍然没有找到匹配的区域，设为其他
+                if (!foundDistrict) {
                     order.district = '其他' as any
                 }
             }
@@ -273,29 +336,42 @@ export function parseMultipleOrders(text: string, userCity: City): Partial<Tutor
         return [parseOrderText(text, userCity)]
     }
 
-    // 使用正则表达式匹配完整的订单号模式，并清理每个订单文本的引号
-    const orderTexts = text
-        .replace(/^"|"$/g, '')  // 先清理整个文本的首尾引号
-        .split(/(?=\d{6}号家教)/)
-        .filter(t => {
-            const trimmed = t.trim()
-            return trimmed && /^\d{6}号家教/.test(trimmed)
-        })
-        .map(t => t.replace(/^"|"$/g, '').trim())  // 清理每个订单文本的引号
+    // 按行分割
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line)
+    const orders: string[] = []
+    let currentOrder: string[] = []
 
-    // 如果只有一个订单，直接返回
-    if (orderTexts.length === 1) {
-        return [parseOrderText(text.replace(/^"|"$/g, ''), userCity)]
+    // 遍历每一行
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]
+        
+        // 如果当前行包含"号家教"
+        if (line.includes('号家教')) {
+            // 如果已经有累积的订单内容，保存它
+            if (currentOrder.length > 0) {
+                orders.push(currentOrder.join('\n'))
+                currentOrder = []
+            }
+            // 开始新的订单
+            currentOrder.push(line)
+        } else if (currentOrder.length > 0) {
+            // 如果已经开始收集订单，继续添加行
+            currentOrder.push(line)
+        }
+    }
+
+    // 添加最后一个订单
+    if (currentOrder.length > 0) {
+        orders.push(currentOrder.join('\n'))
     }
 
     // 解析每个订单文本
-    return orderTexts.map(orderText => {
+    return orders.map(orderText => {
         try {
             return parseOrderText(orderText, userCity)
         } catch (error: unknown) {
-            console.error('解析订单失败:', error)
             return {
-                tutor_code: orderText.match(/(\d{6})号家教/)?.[1] || '',
+                tutor_code: orderText.match(/([A-Za-z0-9]+)号家教/)?.[1] || '',
                 requirement_desc: `解析失败: ${error instanceof Error ? error.message : String(error)}`
             }
         }

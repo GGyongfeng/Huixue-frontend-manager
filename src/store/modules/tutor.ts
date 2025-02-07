@@ -12,7 +12,18 @@ const FILTER_STORAGE_KEY = 'tutor_filter_selections'
 const getStoredFilters = (): FilterState => {
   try {
     const stored = localStorage.getItem(FILTER_STORAGE_KEY)
-    return stored ? JSON.parse(stored) : {}
+    const filters = stored ? JSON.parse(stored) : {}
+    
+    // 确保 created_at 筛选条件存在
+    if (!filters.created_at) {
+      filters.created_at = {
+        selected: [],
+        checkAll: false,
+        isIndeterminate: false
+      }
+    }
+    
+    return filters
   } catch (e) {
     console.error('读取筛选条件失败:', e)
     return {}
@@ -70,20 +81,8 @@ export const useTutorStore = defineStore('tutor', {
       // 获取已保存的筛选条件
       const storedFilters = getStoredFilters()
       
-      // 获取可筛选的列
-      const filterableColumns = columns.filter(col => col.select?.type === 'multiple')
-      console.log('可筛选的列:', {
-        总列数: columns.length,
-        可筛选列数: filterableColumns.length,
-        可筛选列: filterableColumns.map(col => ({
-          属性名: col.prop,
-          标签: col.label,
-          选项: col.select?.options
-        }))
-      })
-      
       columns.forEach(col => {
-        if (col.select?.type === 'multiple') {
+        if (col.select?.type === 'multiple' || col.dateRange) {
           // 如果有保存的筛选条件，使用保存的值
           if (storedFilters[col.prop]) {
             this.filterSelections[col.prop] = storedFilters[col.prop]
@@ -97,6 +96,15 @@ export const useTutorStore = defineStore('tutor', {
         }
       })
       
+      // 确保创建时间筛选条件存在并保持其值
+      if (!this.filterSelections.created_at) {
+        this.filterSelections.created_at = storedFilters.created_at || {
+          selected: [],
+          checkAll: false,
+          isIndeterminate: false
+        }
+      }
+      
       // 保存初始化后的状态
       saveFilters(this.filterSelections)
       // 同步更新 searchParams
@@ -108,16 +116,23 @@ export const useTutorStore = defineStore('tutor', {
     
     // 更新某一列的筛选选项
     updateFilterSelection(prop: string, selected: string[]) {
-      if (this.filterSelections[prop]) {
-        this.filterSelections[prop].selected = selected
-        // 保存到本地存储
-        saveFilters(this.filterSelections)
-        // 同步更新 searchParams
-        this.updateSearchParams({
-          ...this.searchParams,
-          filters: filterStateToQuery(this.filterSelections)
-        })
+      // 确保该属性的筛选条件存在
+      if (!this.filterSelections[prop]) {
+        this.filterSelections[prop] = {
+          selected: [],
+          checkAll: false,
+          isIndeterminate: false
+        }
       }
+      
+      this.filterSelections[prop].selected = selected
+      // 保存到本地存储
+      saveFilters(this.filterSelections)
+      // 同步更新 searchParams
+      this.updateSearchParams({
+        ...this.searchParams,
+        filters: filterStateToQuery(this.filterSelections)
+      })
     },
     
     // 更新某一列的全选状态

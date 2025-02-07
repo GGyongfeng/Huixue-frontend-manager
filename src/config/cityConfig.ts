@@ -140,6 +140,7 @@ export const CITY_DISTRICTS = {
       '六合区',
       '溧水区',
       '高淳区',
+      '江北新区',
       '线上',
       '其他'
     ] as const,

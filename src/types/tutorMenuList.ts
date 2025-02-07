@@ -22,6 +22,7 @@ export interface TableColumn {
     type: SelectType  // 选择类型：单选/多选/无
     options: string[] // 可选值列表
   }
+  dateRange?: boolean  // 新增日期范围选择配置
 }
 
 // 所有可能的列配置
@@ -33,39 +34,6 @@ export const ALL_COLUMNS: TableColumn[] = [
     visible: true,
     comment: '订单的唯一编号'
   },
-  // { 
-  //   prop: 'order_tags', 
-  //   label: '订单标签', 
-  //   width: FOUR_CHAR_LABEL_WIDTH,
-  //   visible: true,
-  //   comment: '订单标签',
-  //   select: {
-  //     type: 'multiple',
-  //     options: [...ORDER_ITEM_OPTIONS.order_tags]
-  //   }
-  // },
-  // { 
-  //   prop: 'student_gender', 
-  //   label: '学生性别', 
-  //   width: FOUR_CHAR_LABEL_WIDTH,
-  //   visible: true,
-  //   comment: '学生的性别',
-  //   select: {
-  //     type: 'multiple',
-  //     options: [...ORDER_ITEM_OPTIONS.gender_options]
-  //   }
-  // },
-  // { 
-  //   prop: 'teaching_type', 
-  //   label: '教学类型', 
-  //   width: 120,
-  //   visible: true,
-  //   comment: '一对一或一对多',
-  //   select: {
-  //     type: 'multiple',
-  //     options: [...ORDER_ITEM_OPTIONS.teaching_types]
-  //   }
-  // },
   { 
     prop: 'student_grade', 
     label: '学生年级', 
@@ -89,35 +57,6 @@ export const ALL_COLUMNS: TableColumn[] = [
       options: [...ORDER_ITEM_OPTIONS.subjects]
     }
   },
-  // { 
-  //   prop: 'subjects_desc', 
-  //   label: '科目详细说明', 
-  //   width: 200,
-  //   visible: true,
-  //   comment: '补习科目详细说明',
-  // },
-  // { 
-  //   prop: 'teacher_type', 
-  //   label: '教师类型', 
-  //   width: FOUR_CHAR_LABEL_WIDTH,
-  //   visible: true,
-  //   comment: '期望的教师类型',
-  //   select: {
-  //     type: 'multiple',
-  //     options: [...ORDER_ITEM_OPTIONS.teacher_types]
-  //   }
-  // },
-  // { 
-  //   prop: 'teacher_gender', 
-  //   label: '教师性别', 
-  //   width: FOUR_CHAR_LABEL_WIDTH,
-  //   visible: true,
-  //   comment: '期望的教师性别',
-  //   select: {
-  //     type: 'multiple',
-  //     options: ['男', '女', '无']
-  //   }
-  // },
   { 
     prop: 'district', 
     label: '区域', 
@@ -143,35 +82,6 @@ export const ALL_COLUMNS: TableColumn[] = [
     visible: true,
     comment: '详细地址'
   },
-  
-  // { 
-  //   prop: 'grade_score', 
-  //   label: '现阶段成绩', 
-  //   width: 200,
-  //   visible: true,
-  //   comment: '学生当前成绩'
-  // },
-  // { 
-  //   prop: 'tutoring_time', 
-  //   label: '补习时间', 
-  //   width: 150,
-  //   visible: true,
-  //   comment: '期望的补习时间'
-  // },
-  // { 
-  //   prop: 'salary', 
-  //   label: '课时费', 
-  //   width: FOUR_CHAR_LABEL_WIDTH,
-  //   visible: true,
-  //   comment: '每小时费用'
-  // },
-  // { 
-  //   prop: 'requirement_desc', 
-  //   label: '对老师要求', 
-  //   width: 200,
-  //   visible: false,
-  //   comment: '对老师要求'
-  // },  
   { 
     prop: 'original_text', 
     label: '订单内容', 
@@ -201,7 +111,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '是否对外可见',
     select: {
       type: 'multiple',
-      options: ['1', '0']
+      options: ['可见', '隐藏']
     }
   },
   { 
@@ -233,7 +143,8 @@ export const ALL_COLUMNS: TableColumn[] = [
       })
     },
     visible: true,
-    comment: '创建时间'
+    comment: '创建时间',
+    dateRange: true  // 启用日期范围选择
   },
   { 
     prop: 'created_by_name', 
