@@ -100,6 +100,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'change', columns: string[]): void
   (e: 'update:modelValue', columns: string[]): void
+  (e: 'update:searchResults', results: any): void
 }>()
 
 // 修改 emitChange 函数
@@ -126,6 +127,7 @@ onMounted(() => {
   checkAll.value = columns.length === columnOptions.length
   isIndeterminate.value = columns.length > 0 && columns.length < columnOptions.length
 })
+
 </script>
 
 <style lang="scss" scoped>

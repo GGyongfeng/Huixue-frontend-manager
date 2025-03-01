@@ -74,5 +74,32 @@ export const queryApis = {
     return request.get<BaseResult & { data: TutorOrder }>({
       url: `/api/manager/tutors/detail/${orderCode}`
     })
+  },
+
+  /**
+   * 批量获取订单详情
+   * @param orderCodes 订单编号数组
+   * @returns 返回多个订单的详细信息
+   */
+  getTutorDetailsBatch: async (orderCodes: string[]) => {
+    const loading = ElLoading.service({
+      lock: true,
+      text: '加载中...',
+      background: 'rgba(0, 0, 0, 0.7)'
+    })
+
+    try {
+      const result = await request.post<BaseResult & { data: TutorOrder[] }>({
+        url: '/api/manager/tutors/detail/alot',
+        data: { orderCodes }
+      })
+      console.log("query.ts - 批量订单详情请求结果", result)
+      return result
+    } catch (error) {
+      console.error('批量获取订单详情失败:', error)
+      throw error
+    } finally {
+      loading.close()
+    }
   }
 } 

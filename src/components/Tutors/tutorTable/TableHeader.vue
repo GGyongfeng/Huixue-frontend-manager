@@ -71,10 +71,13 @@ import { useTutorStore } from '@/store/modules/tutor'
 import { storeToRefs } from 'pinia'
 import type { DateModelType } from 'element-plus'
 import { useWindowSize } from '@vueuse/core'
+import { useUserStore } from '@/store/modules/user'
+import { ORDER_ITEM_OPTIONS } from '@/types/OrderOptions'
+import type { City } from '@/config/cityConfig'
 
 // 日期范围类型
 type RangeValue = string[]
-const dateRange = ref<RangeValue | null>(null)
+const dateRange = ref<RangeValue>([])
 
 const props = defineProps<{
   column: TableColumn
@@ -180,7 +183,21 @@ onMounted(() => {
   if (storedDates.length === 2) {
     dateRange.value = storedDates  // 直接使用存储的日期字符串
   }
+  
+  // 调试信息
+  console.log('用户城市:', userCity.value)
+  console.log('创建人选项:', createdByNameOptions.value)
 })
+
+// 获取用户城市信息
+const userStore = useUserStore()
+const userCity = computed(() => (userStore.info?.userInfo?.city || '天津') as City)
+
+// 动态获取 created_by_name 选项
+const createdByNameOptions = computed(() => {
+  return ORDER_ITEM_OPTIONS.created_by_name[userCity.value as keyof typeof ORDER_ITEM_OPTIONS.created_by_name] || []
+})
+
 </script>
 
 <style lang="scss" scoped>

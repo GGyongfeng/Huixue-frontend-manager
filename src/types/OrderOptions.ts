@@ -56,6 +56,15 @@ const ORDER_TAGS = [
 
 const DISTRICTS: typeof CITY_DISTRICTS = CITY_DISTRICTS
 
+const CREATED_BY_NAME = {
+  '天津': ['小陈老师', '悦悦老师', '小杰老师'],
+  '西安': ['汇博张老师', '小尹老师'],
+  '北京': ['汇鸣崔老师', '柚子老师'],
+  '南京': ['欧阳老师'],
+  '上海': ['汇学崔老师', '小田老师'],
+  '武汉': ['悠悠老师']
+} as const
+
 // 导出类型
 export type TeachingType = typeof TEACHING_TYPES[number]
 export type StudentGrade = typeof STUDENT_GRADES[number]
@@ -76,7 +85,8 @@ export const ORDER_ITEM_OPTIONS = {
   student_levels: STUDENT_LEVELS,
   gender_options: GENDER_OPTIONS,
   order_tags: ORDER_TAGS,
-  districts: DISTRICTS
+  districts: DISTRICTS,
+  created_by_name: CREATED_BY_NAME
 }
 
 // 订单表单默认选项

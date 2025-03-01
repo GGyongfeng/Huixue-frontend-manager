@@ -5,6 +5,7 @@
               @search="handleSearch" 
               @column-change="handleColumnsChange"
               @multiple-selection-change="handleMultipleSelectionChange"
+              @update:searchResults="handleSearchResults"
             />
         </div>
         <div v-loading="loading">
@@ -451,6 +452,14 @@ watch(
     }
   }
 )
+
+// 添加handleSearchResults函数
+const handleSearchResults = (results: TutorOrder[]) => {
+  console.log('List.vue-接收到的搜索结果:', results)  // 添加日志
+  tutorList.value = results
+  total.value = results.length
+  ElMessage.success('批量搜索成功')
+}
 </script>
 
 <style lang="scss" scoped>

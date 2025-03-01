@@ -190,6 +190,7 @@ onMounted(() => {
   console.log('tutorTable mounted, 初始化筛选条件')  // 添加日志
   console.log('当前城市:', userCity.value)  // 添加日志
   console.log('表格配置:', config.value)  // 添加日志
+  console.log('传入的数据:', props.data)  // 添加日志
   tutorStore.initFilterSelections(getAllColumns(userCity.value))
 })
 

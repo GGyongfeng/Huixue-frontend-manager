@@ -151,7 +151,11 @@ export const ALL_COLUMNS: TableColumn[] = [
     label: '创建人', 
     width: 100,
     visible: true,
-    comment: '创建人姓名'
+    comment: '创建人姓名',
+    select: {
+      type: 'multiple',
+      options: [...ORDER_ITEM_OPTIONS.created_by_name['天津']] // 默认显示天津的选项
+    }
   },
   { 
     prop: 'updated_at', 
