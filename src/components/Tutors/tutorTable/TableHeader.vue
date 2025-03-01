@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
 import type { TableColumn } from '@/types/tutorMenuList'
 import type { CheckboxValueType } from 'element-plus'
@@ -74,6 +74,7 @@ import { useWindowSize } from '@vueuse/core'
 import { useUserStore } from '@/store/modules/user'
 import { ORDER_ITEM_OPTIONS } from '@/types/OrderOptions'
 import type { City } from '@/config/cityConfig'
+import { CREATED_BY_NAME } from '@/config/cityConfig'
 
 // 日期范围类型
 type RangeValue = string[]
@@ -88,7 +89,7 @@ const { filterSelections } = storeToRefs(tutorStore)
 
 const label = computed(() => props.column.label)
 const selected = computed(() => filterSelections.value[props.column.prop]?.selected || [])
-const checkAll = computed(() => filterSelections.value[props.column.prop]?.checkAll || false)
+const checkAll = computed(() => Boolean(filterSelections.value[props.column.prop]?.checkAll || false))
 const isIndeterminate = computed(() => filterSelections.value[props.column.prop]?.isIndeterminate || false)
 
 const handleFilter = (prop: string, value: string) => {
@@ -184,9 +185,6 @@ onMounted(() => {
     dateRange.value = storedDates  // 直接使用存储的日期字符串
   }
   
-  // 调试信息
-  console.log('用户城市:', userCity.value)
-  console.log('创建人选项:', createdByNameOptions.value)
 })
 
 // 获取用户城市信息
@@ -197,7 +195,10 @@ const userCity = computed(() => (userStore.info?.userInfo?.city || '天津') as 
 const createdByNameOptions = computed(() => {
   return ORDER_ITEM_OPTIONS.created_by_name[userCity.value as keyof typeof ORDER_ITEM_OPTIONS.created_by_name] || []
 })
-
+// 调试信息
+console.log('用户城市:', userCity.value)
+console.log('创建人选项:', createdByNameOptions.value)
+console.log('createdByNameOptions :', createdByNameOptions.value)
 </script>
 
 <style lang="scss" scoped>

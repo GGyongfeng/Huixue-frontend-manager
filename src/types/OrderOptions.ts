@@ -1,4 +1,4 @@
-import { CITY_DISTRICTS } from '@/config/cityConfig'
+import { CITY_DISTRICTS, CREATED_BY_NAME } from '@/config/cityConfig'
 
 // 定义常量和类型
 const TEACHING_TYPES = ['一对一', '一对多'] as const
@@ -55,15 +55,6 @@ const ORDER_TAGS = [
 ] as const
 
 const DISTRICTS: typeof CITY_DISTRICTS = CITY_DISTRICTS
-
-const CREATED_BY_NAME = {
-  '天津': ['小陈老师', '悦悦老师', '小杰老师'],
-  '西安': ['汇博张老师', '小尹老师'],
-  '北京': ['汇鸣崔老师', '柚子老师'],
-  '南京': ['欧阳老师'],
-  '上海': ['汇学崔老师', '小田老师'],
-  '武汉': ['悠悠老师']
-} as const
 
 // 导出类型
 export type TeachingType = typeof TEACHING_TYPES[number]

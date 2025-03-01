@@ -1,6 +1,6 @@
 import type { TutorOrder } from './tutorOrder'
 import { ORDER_ITEM_OPTIONS } from '@/types/OrderOptions'
-import { CITY_DISTRICTS, type City } from '@/config/cityConfig'
+import { CITY_DISTRICTS, CREATED_BY_NAME, type City } from '@/config/cityConfig'
 
 // 选择类型
 type SelectType = 'multiple' | 'none'
@@ -154,7 +154,7 @@ export const ALL_COLUMNS: TableColumn[] = [
     comment: '创建人姓名',
     select: {
       type: 'multiple',
-      options: [...ORDER_ITEM_OPTIONS.created_by_name['天津']] // 默认显示天津的选项
+      options: [...CREATED_BY_NAME['天津']] // 默认显示天津的选项
     }
   },
   { 
@@ -262,10 +262,19 @@ export function getAllColumns(city: City): TableColumn[] {
         }
       }
     }
+    if (col.prop === 'created_by_name' && col.select) {
+      return {
+        ...col,
+        select: {
+          ...col.select,
+          options: [...CREATED_BY_NAME[city]]
+        }
+      }
+    }
     return col
   })
 }
 
 // 检查这些常量是否正确导出和定义
 console.log('所有可用列:', ALL_COLUMNS)
-console.log('默认显示列:', DEFAULT_COLUMNS) 
+console.log('默认显示列:', DEFAULT_COLUMNS)
